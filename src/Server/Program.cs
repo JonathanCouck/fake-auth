@@ -1,5 +1,6 @@
 using BogusStore.Persistence;
 using BogusStore.Server.Authentication;
+using BogusStore.Server.Helper;
 using BogusStore.Server.Middleware;
 using BogusStore.Services;
 using BogusStore.Shared.Products;
@@ -7,7 +8,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,9 +31,11 @@ builder.Services.AddSwaggerGen(options =>
 // Database
 builder.Services.AddDbContext<BogusDbContext>();
 
-// (Fake) Authentication
-builder.Services.AddAuthentication("Fake Authentication")
-                .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("Fake Authentication", null);
+// (Fake) Jwt Authentication
+JwtHelper.AddAuthentication(builder);
+// builder.Services.AddHttpClient();
+// builder.Services.AddAuthentication("Fake Authentication")
+//                 .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("Fake Authentication", null);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -59,8 +62,9 @@ app.UseStaticFiles();
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
+
+// Jwt Authentication
+JwtHelper.MapTokenPost(builder, app);
 
 app.MapRazorPages();
 app.MapControllers().RequireAuthorization();
