@@ -1,32 +1,62 @@
-﻿using Ardalis.GuardClauses;
-using Domain.Common;
-using Domain.Orders;
-using System.Collections.Generic;
+﻿using System;
+using System.Net;
+using BogusStore.Domain.Orders;
 
-namespace Domain.Customers
+namespace BogusStore.Domain.Customers;
+
+public class Customer : Entity
 {
-    public class Customer : Entity
+    private string firstname = default!;
+    public string Firstname
     {
-        public CustomerName Name { get; private set; }
-        public Address Address { get; private set; }
-        public List<Order> Orders { get; set; }
+        get => firstname;
+        set => firstname = Guard.Against.NullOrWhiteSpace(value, nameof(Firstname));
+    }
 
-        private Customer()
-        {
+    private string lastname = default!;
+    public string Lastname
+    {
+        get => lastname;
+        set => lastname = Guard.Against.NullOrWhiteSpace(value, nameof(Lastname));
+    }
 
-        }
+    private Address address = default!;
+    public Address Address
+    {
+        get => address;
+        set => address = Guard.Against.Null(value, nameof(Address));
+    }
 
-        public Customer(CustomerName name, Address address)
-        {
-            Name = Guard.Against.Null(name, nameof(name));
-            Address = Guard.Against.Null(address, nameof(address));
-        }
+    private EmailAddress email = default!;
+    public EmailAddress Email
+    {
+        get => email;
+        set => email = Guard.Against.Null(value, nameof(Email));
+    }
 
-        public Order PlaceOrder(Cart cart, DeliveryDate deliveryDate, bool hasGiftWrapping, Address shippingAddress)
-        {
-            var order = new Order(cart, deliveryDate, hasGiftWrapping, this, shippingAddress);
-            Orders.Add(order);
-            return order;
-        }
+    private readonly List<Order> orders = new();
+    public IReadOnlyCollection<Order> Orders => orders.AsReadOnly();
+
+    /// <summary>
+    /// Database Constructor
+    /// </summary>
+    private Customer() { }
+
+    public Customer(string firstname, string lastname, Address address, EmailAddress email)
+    {
+        Firstname = firstname;
+        Lastname = lastname;
+        Address = address;
+        Email = email;
+    }
+
+    public Order PlaceOrder(IEnumerable<OrderItem> items)
+    {
+        if (!IsEnabled)
+            throw new ApplicationException($"{nameof(Customer)} is not active, could not place the order.");
+
+        Order order = new Order(this, items);
+        orders.Add(order);
+        return order;
     }
 }

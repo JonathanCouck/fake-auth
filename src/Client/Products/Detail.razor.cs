@@ -1,67 +1,63 @@
-﻿using Append.Blazor.Sidepanel;
-using Client.Ordering;
-using Client.Products.Components;
 using Microsoft.AspNetCore.Components;
-using Shared.Products;
-using System.Collections.Generic;
+using BogusStore.Shared.Products;
 using System.Threading.Tasks;
+using BogusStore.Client.Products.Components;
+using Append.Blazor.Sidepanel;
+using BogusStore.Client.Orders;
 
+namespace BogusStore.Client.Products;
 
-namespace Client.Products
+public partial class Detail
 {
-    public partial class Detail
+    private ProductDto.Detail? product;
+    private bool isRequestingDelete;
+
+    [Parameter] public int Id { get; set; }
+    [Inject] public IProductService ProductService { get; set; } = default!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] public ISidepanelService Sidepanel { get; set; } = default!;
+    [Inject] public Cart Cart { get; set; } = default!;
+
+    protected override async Task OnParametersSetAsync()
     {
-        private ProductDto.Detail product;
-        private bool isRequestingDelete;
-        [Parameter] public int Id { get; set; }
-        [Inject] public IProductService ProductService { get; set; }
-        [Inject] public NavigationManager NavigationManager { get; set; }
-        [Inject] public ISidepanelService Sidepanel { get; set; }
-        [Inject] public Cart Cart { get; set; }
-        protected override async Task OnParametersSetAsync()
-        {
-            await GetProductAsync();
-        }
+        await GetProductAsync();
+    }
 
-        private void RequestDelete()
-        {
-            isRequestingDelete = true;
-        }
+    private void RequestDelete()
+    {
+        isRequestingDelete = true;
+    }
 
-        private void CancelDeleteRequest()
-        {
-            isRequestingDelete = false;
-        }
+    private void CancelDeleteRequest()
+    {
+        isRequestingDelete = false;
+    }
 
-        private async Task DeleteProductAsync()
-        {
-            var request = new ProductRequest.Delete { ProductId = Id };
-            await ProductService.DeleteAsync(request);
-            NavigationManager.NavigateTo("/");
-        }
+    private async Task DeleteProductAsync()
+    {
+        await ProductService.DeleteAsync(Id);
+        NavigationManager.NavigateTo("product");
+    }
 
-        private void OpenEditForm()
-        {
-            var callback = EventCallback.Factory.Create(this, GetProductAsync);
+    private void ShowEditForm()
+    {
+        var callback = EventCallback.Factory.Create(this, GetProductAsync);
 
-            var parameters = new Dictionary<string, object> 
-            {
-                { nameof(Edit.ProductId), product.Id },
-                { nameof(Edit.OnProductChanged),callback  }
-            };
-            Sidepanel.Open<Edit>("Product", "Wijzigen", parameters);
-        }
+        var parameters = new Dictionary<string, object>
+             {
+                 { nameof(Edit.ProductId), Id },
+                 { nameof(Edit.OnProductEdited),callback  }
+             };
+        Sidepanel.Open<Edit>("Product", "Wijzigen", parameters);
+    }
 
-        private async Task GetProductAsync()
-        {
-            ProductRequest.GetDetail request = new() { ProductId = Id };
-            var response = await ProductService.GetDetailAsync(request);
-            product = response.Product;
-        }
+    private async Task GetProductAsync()
+    {
+        product = await ProductService.GetDetailAsync(Id);
+    }
 
-        private void AddToCart()
-        {
-            Cart.AddItem(product.Id, product.Name, product.Price);
-        }
+    private void AddToCart()
+    {
+        Cart.AddItem(product!.Id, product!.Name!, product.Price);
     }
 }

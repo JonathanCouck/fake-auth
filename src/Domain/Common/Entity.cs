@@ -1,70 +1,75 @@
-﻿using System;
+﻿namespace BogusStore.Domain.Common;
 
-namespace Domain.Common
+/// <summary>
+/// Base class for all Entities, see
+/// <seealso cref="https://enterprisecraftsmanship.com/posts/entity-base-class/"/> for more information.
+/// </summary>
+public abstract class Entity
 {
-    public abstract class Entity
+    public int Id { get; protected set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public bool IsEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Entity Framework Constructor
+    /// </summary>
+    protected Entity() { }
+
+    public override bool Equals(object? obj)
     {
-        public int Id { get; init; }
-        public bool IsEnabled { get; set; }
-        protected Entity()
-        {
-        }
+        if (obj is not Entity other)
+            return false;
 
-        protected Entity(int id)
-        {
-            Id = id;
-        }
+        if (ReferenceEquals(this, other))
+            return true;
 
-        public override bool Equals(object obj)
-        {
-            if (obj is not Entity other)
-                return false;
+        if (GetUnproxiedType(this) != GetUnproxiedType(other))
+            return false;
 
-            if (ReferenceEquals(this, other))
-                return true;
+        if (Id.Equals(default) || other.Id.Equals(default))
+            return false;
 
-            if (GetUnproxiedType(this) != GetUnproxiedType(other))
-                return false;
+        return Id.Equals(other.Id);
+    }
 
-            if (Id.Equals(default) || other.Id.Equals(default))
-                return false;
+    public static bool operator ==(Entity a, Entity b)
+    {
+        if (a is null && b is null)
+            return true;
 
-            return Id.Equals(other.Id);
-        }
+        if (a is null || b is null)
+            return false;
 
-        public static bool operator ==(Entity a, Entity b)
-        {
-            if (a is null && b is null)
-                return true;
+        return a.Equals(b);
+    }
 
-            if (a is null || b is null)
-                return false;
+    public static bool operator !=(Entity a, Entity b)
+    {
+        return !(a == b);
+    }
 
-            return a.Equals(b);
-        }
+    public override int GetHashCode()
+    {
+        return (GetUnproxiedType(this).ToString() + Id).GetHashCode();
+    }
 
-        public static bool operator !=(Entity a, Entity b)
-        {
-            return !(a == b);
-        }
+    internal static Type GetUnproxiedType(object obj)
+    {
+        const string EFCoreProxyPrefix = "Castle.Proxies.";
+        const string NHibernateProxyPostfix = "Proxy";
 
-        public override int GetHashCode()
-        {
-            return (GetUnproxiedType(this).ToString() + Id).GetHashCode();
-        }
+        Type type = obj.GetType();
+        string typeString = type.ToString();
 
-        internal static Type GetUnproxiedType(object obj)
-        {
-            const string EFCoreProxyPrefix = "Castle.Proxies.";
-            const string NHibernateProxyPostfix = "Proxy";
+        if (typeString.Contains(EFCoreProxyPrefix) || typeString.EndsWith(NHibernateProxyPostfix))
+            return type.BaseType!;
 
-            Type type = obj.GetType();
-            string typeString = type.ToString();
+        return type;
+    }
 
-            if (typeString.Contains(EFCoreProxyPrefix) || typeString.EndsWith(NHibernateProxyPostfix))
-                return type.BaseType;
-
-            return type;
-        }
+    public override string ToString()
+    {
+        return $"{GetType().Name} - {Id}";
     }
 }

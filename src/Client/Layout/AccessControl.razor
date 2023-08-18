@@ -1,27 +1,20 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿
+<div class="navbar-item has-dropdown is-hoverable ">
+    <a class="navbar-link">
+        Login as
+    </a>
 
-@inject NavigationManager Navigation
+    <div class="navbar-dropdown is-right">
 
-<AuthorizeView>
-    <Authorized>
-        <button class="button is-light" @onclick="BeginSignOut">
-            <strong>Uitloggen</strong>
-        </button>
-    </Authorized>
-    <NotAuthorized>
-        <a class="button is-primary" @onclick="BeginSignIn">
-            <strong>Inloggen</strong>
-        </a>
-    </NotAuthorized>
-</AuthorizeView>
+        @foreach (var claimsPrincipal in FakeAuthenticationProvider.ClaimsPrincipals)
+        {
+            <a class="navbar-item @IsActive(claimsPrincipal)" @onclick="_ => ChangePrincipal(claimsPrincipal)">
+                @claimsPrincipal.Identity?.Name
+            </a>
+        }
+    </div>
 
-@code {
-    private Task BeginSignOut(MouseEventArgs args)
-    {
-        throw new NotImplementedException("Logout is currently not supported.");
-    }
-    private Task BeginSignIn(MouseEventArgs args)
-    {
-        throw new NotImplementedException("Login is currently not supported.");
-    }
-}
+</div>
+<a class="navbar-item">
+    @FakeAuthenticationProvider.Current.Identity?.Name
+</a>

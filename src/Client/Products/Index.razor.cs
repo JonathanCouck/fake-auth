@@ -1,56 +1,42 @@
-﻿using Append.Blazor.Sidepanel;
-using Client.Products.Components;
-using Microsoft.AspNetCore.Components;
-using Shared.Products;
-using System;
+﻿using Microsoft.AspNetCore.Components;
+using BogusStore.Shared.Products;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Append.Blazor.Sidepanel;
 
-namespace Client.Products
+namespace BogusStore.Client.Products;
+
+public partial class Index
 {
-    public partial class Index : IDisposable
+    [Inject] public IProductService ProductService { get; set; } = default!;
+    [Inject] public ISidepanelService Sidepanel { get; set; } = default!;
+
+    [Parameter, SupplyParameterFromQuery] public string? Searchterm { get; set; }
+    [Parameter, SupplyParameterFromQuery] public int? Page { get; set; }
+    [Parameter, SupplyParameterFromQuery] public int? PageSize { get; set; }
+    [Parameter, SupplyParameterFromQuery] public decimal? MinPrice { get; set; }
+    [Parameter, SupplyParameterFromQuery] public decimal? MaxPrice { get; set; }
+    [Parameter, SupplyParameterFromQuery] public int? TagId { get; set; }
+
+    private IEnumerable<ProductDto.Index>? products;
+    protected override async Task OnParametersSetAsync()
     {
-        [Inject] public ISidepanelService Sidepanel { get; set; }
-        [Inject] public IProductService ProductService { get; set; }
-        private readonly ProductFilter filter = new();
-
-        private List<ProductDto.Index> products;
-        private int totalFilteredAmount;
-
-        protected override async Task OnInitializedAsync()
+        ProductRequest.Index request = new()
         {
-            filter.OnProductFilterChanged += FilterProductsAsync;
-            ProductRequest.GetIndex request = new();
-            var response = await ProductService.GetIndexAsync(request);
-            products = response.Products;
-            totalFilteredAmount = response.TotalAmount;
-        }
+            Searchterm = Searchterm,
+            Page = Page.HasValue ? Page.Value : 1,
+            PageSize = PageSize.HasValue ? PageSize.Value : 25,
+            MinPrice = MinPrice,
+            MaxPrice = MaxPrice,
+            TagId = TagId
+        };
 
-        private void OpenCreateForm()
-        {
-            Sidepanel.Open<Create>("Product", "Toevoegen");
-        }
+        var response = await ProductService.GetIndexAsync(request);
+        products = response.Products;
+    }
 
-        private async void FilterProductsAsync()
-        {
-            ProductRequest.GetIndex request = new()
-            {
-                MaximumPrice = filter.MaximumPrice,
-                Category = filter.Category,
-                MinimumPrice = filter.MinimumPrice,
-                SearchTerm = filter.SearchTerm,
-                Page = filter.Page,
-                Amount = filter.Amount,
-            };
-            var response = await ProductService.GetIndexAsync(request);
-            products = response.Products;
-            totalFilteredAmount = response.TotalAmount;
-            StateHasChanged();
-        }
-
-        public void Dispose()
-        {
-            filter.OnProductFilterChanged -= FilterProductsAsync;
-        }
+    private void ShowCreateForm()
+    {
+        Sidepanel.Open<Components.Create>("Product", "Toevoegen");
     }
 }

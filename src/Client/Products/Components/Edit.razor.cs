@@ -1,46 +1,37 @@
-﻿using Append.Blazor.Sidepanel;
+﻿using System;
+using Append.Blazor.Sidepanel;
+using BogusStore.Shared.Products;
 using Microsoft.AspNetCore.Components;
-using Shared.Products;
-using System.Threading.Tasks;
 
-namespace Client.Products.Components
+namespace BogusStore.Client.Products.Components;
+
+public partial class Edit
 {
-    public partial class Edit
+    private ProductDto.Mutate product = new();
+
+    [Parameter] public int ProductId { get; set; }
+    [Parameter] public EventCallback OnProductEdited { get; set; }
+
+    [Inject] public IProductService ProductService { get; set; } = default!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] public ISidepanelService Sidepanel { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
     {
-        [Parameter] public int ProductId { get; set; }
-        [Parameter] public EventCallback OnProductChanged { get; set; }
-        private ProductDto.Mutate model = new();
-        [Inject] public IProductService ProductService { get; set; }
-        [Inject] public NavigationManager NavigationManager { get; set; }
-        [Inject] public ISidepanelService Sidepanel { get; set; }
-
-        protected override async Task OnInitializedAsync()
+        await base.OnInitializedAsync();
+        var detail = await ProductService.GetDetailAsync(ProductId);
+        product = new ProductDto.Mutate
         {
-            ProductDto.Detail product;
-            // Fetch the latest version of the product before editing.
-            var response = await ProductService.GetDetailAsync(new ProductRequest.GetDetail { ProductId = ProductId });
-            product = response.Product;
+            Name = detail.Name,
+            Description = detail.Description,
+            Price = detail.Price
+        };
+    }
 
-            model = new ProductDto.Mutate
-            {
-                Category = product.CategoryName,
-                Description = product.Description,
-                InStock = product.IsInStock,
-                Name = product.Name,
-                Price = product.Price,
-            };
-        }
-
-        private async Task EditProductAsync()
-        {
-            ProductRequest.Edit request = new()
-            {
-                ProductId = ProductId,
-                Product = model
-            };
-            await ProductService.EditAsync(request);
-            await OnProductChanged.InvokeAsync();
-            Sidepanel.Close();
-        }
+    private async Task EditProductAsync()
+    {
+        await ProductService.EditAsync(ProductId, product);
+        Sidepanel.Close();
+        await OnProductEdited.InvokeAsync();
     }
 }

@@ -1,39 +1,37 @@
-﻿using Append.Blazor.Sidepanel;
-using Client.Ordering;
-using Client.Ordering.Components;
+﻿using System;
+using Append.Blazor.Sidepanel;
+using BogusStore.Client.Orders;
+using BogusStore.Client.Orders.Components;
 using Microsoft.AspNetCore.Components;
-using System;
 
-namespace Client.Layout
+namespace BogusStore.Client.Layout;
+
+public partial class Header : IDisposable
 {
-    public partial class Header : IDisposable
+    private bool isOpen;
+    private string? isOpenClass => isOpen ? "is-active" : null;
+
+    [Inject] public ISidepanelService Sidepanel { get; set; } = default!;
+    [Inject] public Cart Cart { get; set; } = default!;
+
+    protected override void OnInitialized()
     {
-        private bool isOpen;
-        private string isOpenClass => isOpen ? "is-active" : null;
+        Cart.OnCartChanged += StateHasChanged;
+    }
 
-        [Inject] public ISidepanelService Sidepanel { get; set; }
-        [Inject] public Cart Cart { get; set; }
+    public void Dispose()
+    {
+        Cart.OnCartChanged -= StateHasChanged;
+    }
 
-        protected override void OnInitialized()
-        {
-            Cart.OnCartChanged += StateHasChanged;
-        }
+    private void ToggleMenuDisplay()
+    {
+        isOpen = !isOpen;
+    }
 
-        public void Dispose()
-        {
-            Cart.OnCartChanged -= StateHasChanged;
-        }
-
-        private void ToggleMenuDisplay()
-        {
-            isOpen = !isOpen;
-        }
-
-        private void OpenShoppingCart()
-        {
-            Sidepanel.Open<ShoppingCart>("Winkelwagen");
-        }
-
-
+    private void OpenShoppingCart()
+    {
+        Sidepanel.Open<ShoppingCart>("Winkelwagen");
     }
 }
+

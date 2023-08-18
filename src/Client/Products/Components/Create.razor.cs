@@ -1,35 +1,32 @@
-﻿using Client.Infrastructure;
+﻿using System;
+using Blazored.FluentValidation;
+using BogusStore.Client.Extensions;
+using BogusStore.Client.Files;
+using BogusStore.Shared.Products;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Shared.Products;
-using System.Threading.Tasks;
 
-namespace Client.Products.Components
+namespace BogusStore.Client.Products.Components;
+
+public partial class Create
 {
-    public partial class Create
+    private IBrowserFile? image;
+    private ProductDto.Mutate product = new();
+    [Inject] public IProductService ProductService { get; set; } = default!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] public IStorageService StorageService { get; set; } = default!;
+
+    private async Task CreateProductAsync()
     {
-        private ProductDto.Mutate product = new();
-        private IBrowserFile image;
-        [Inject] public IProductService ProductService { get; set; }
-        [Inject] public NavigationManager NavigationManager { get; set; }
-        [Inject] public StorageService StorageService { get; set; }
-        private async Task CreateProductAsync()
-        {
-            ProductRequest.Create request = new()
-            {
-                Product = product
-            };
+        ProductResult.Create result = await ProductService.CreateAsync(product);
+        await StorageService.UploadImageAsync(result.UploadUri, image!);
 
-            var response = await ProductService.CreateAsync(request);
+        NavigationManager.NavigateTo($"product/{result.ProductId}");
+    }
 
-            await StorageService.UploadImageAsync(response.UploadUri, image);
-            NavigationManager.NavigateTo($"product/{response.ProductId}");
-        }
-
-        private void LoadImage(InputFileChangeEventArgs args)
-        {
-            image = args.File;
-            product.ImageAmount = 1;
-        }
+    private void LoadImage(InputFileChangeEventArgs e)
+    {
+        image = e.File;
+        product.ImageContentType = image.ContentType;
     }
 }

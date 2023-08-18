@@ -1,44 +1,26 @@
-﻿using Ardalis.GuardClauses;
-using Domain.Common;
-using Domain.Customers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using BogusStore.Domain.Customers;
 
-namespace Domain.Orders
+namespace BogusStore.Domain.Orders;
+
+public class Order : Entity
 {
-    public class Order : Entity
+    private readonly List<OrderLine> lines = new();
+
+    public Customer Customer { get; } = default!;
+
+    public IReadOnlyCollection<OrderLine> Lines => lines.AsReadOnly();
+
+    private Order() { }
+
+    public Order(Customer customer, IEnumerable<OrderItem> items)
     {
-        public DateTime OrderDate { get; }
-        public DeliveryDate DeliveryDate { get; }
-        public bool HasGiftWrapping { get; }
-        public Address ShippingAddress { get; }
-        public List<OrderLine> Items { get; set; }
-        public Customer Customer { get; set; }
+        Customer = Guard.Against.Null(customer, nameof(Customer));
+        Guard.Against.NullOrEmpty(items, nameof(items));
 
-        public Money Total => Items.Sum(line => line.Price * line.Quantity);
-
-        private Order()
+        foreach (OrderItem item in items)
         {
-
-        }
-
-        public Order(Cart cart, DeliveryDate deliveryDate, bool hasGiftWrapping, Customer customer, Address shippingAddress)
-        {
-            ShippingAddress = Guard.Against.Null(shippingAddress,nameof(shippingAddress));
-            Guard.Against.Null(cart,nameof(cart));
-            Guard.Against.Zero(cart.Lines.Count, $"{nameof(Cart)} {nameof(Cart.Lines)}");
-            OrderDate = DateTime.UtcNow;
-            DeliveryDate = deliveryDate;
-            HasGiftWrapping = hasGiftWrapping;
-            Customer = customer;
-            
-            foreach (var line in cart.Lines)
-            {
-                Items.Add(new OrderLine(line.Product, line.Quantity));
-            }
-
-            cart.Clear();
+            lines.Add(new OrderLine(this, item));
         }
     }
 }

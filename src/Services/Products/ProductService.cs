@@ -1,132 +1,157 @@
-﻿using Shared.Products;
 using System.Linq;
-using Persistence.Data;
-using System.Threading.Tasks;
+using BogusStore.Domain.Files;
+using BogusStore.Domain.Products;
+using BogusStore.Persistence;
+using BogusStore.Services.Files;
+using BogusStore.Shared.Products;
 using Microsoft.EntityFrameworkCore;
-using Domain.Products;
-using System;
 
-namespace Services.Products
+namespace BogusStore.Services.Products;
+
+public class ProductService : IProductService
 {
-    public class ProductService : IProductService
+    private readonly BogusDbContext dbContext;
+    private readonly IStorageService storageService;
+
+    public ProductService(BogusDbContext dbContext, IStorageService storageService)
     {
-        public ProductService(SportStoreDbContext dbContext)
+        this.dbContext = dbContext;
+        this.storageService = storageService;
+    }
+
+    public async Task<ProductResult.Index> GetIndexAsync(ProductRequest.Index request)
+    {
+        var query = dbContext.Products.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.Searchterm))
         {
-            _dbContext = dbContext;
-            _products = dbContext.Products;
-            _categories = dbContext.Categories;
+            query = query.Where(x => x.Name.Contains(request.Searchterm, StringComparison.OrdinalIgnoreCase));
         }
 
-        private readonly SportStoreDbContext _dbContext;
-        private readonly DbSet<Product> _products;
-        private readonly DbSet<Category> _categories;
-
-        private IQueryable<Product> GetProductById(int id) => _products
-                .AsNoTracking()
-                .Where(p => p.Id == id);
-
-        public async Task<ProductResponse.Create> CreateAsync(ProductRequest.Create request)
+        if (request.MinPrice is not null)
         {
-            ProductResponse.Create response = new();
-            var category = await _categories.SingleOrDefaultAsync(c => c.Name == request.Product.Category);
-            var product = _products.Add(new Product(
-                request.Product.Name,
-                request.Product.Description,
-                request.Product.Price,
-                request.Product.InStock,
-                null,
-                category
-            ));
-            await _dbContext.SaveChangesAsync();
-            response.ProductId = product.Entity.Id;
-            return response;
+            query = query.Where(x => x.Price.Value >= request.MinPrice);
         }
 
-        public async Task DeleteAsync(ProductRequest.Delete request)
+        if (request.MaxPrice is not null)
         {
-            _products.RemoveIf(p => p.Id == request.ProductId);
-            await _dbContext.SaveChangesAsync();
+            query = query.Where(x => x.Price.Value <= request.MaxPrice);
         }
 
-        public async Task<ProductResponse.Edit> EditAsync(ProductRequest.Edit request)
+        if (request.TagId is not null)
         {
-            ProductResponse.Edit response = new();
-            var product = await GetProductById(request.ProductId).SingleOrDefaultAsync();
-
-            if (product is not null)
-            {
-                var model = request.Product;
-                var category = new Category(model.Category);
-
-                // You could use a Product.Edit method here.
-                product.Name = model.Name;
-                product.Description = model.Description;
-                product.InStock = model.InStock;
-                product.Category = category;
-                product.Price = model.Price;
-
-                _dbContext.Entry(product).State = EntityState.Modified;
-                await _dbContext.SaveChangesAsync();
-                response.ProductId = product.Id;
-            }
-
-            return response;
+            query = query.Where(x => x.Tags.Select(x => x.Id).Contains(request.TagId.Value));
         }
 
-        public async Task<ProductResponse.GetDetail> GetDetailAsync(ProductRequest.GetDetail request)
+        int totalAmount = await query.CountAsync();
+
+        var items = await query
+           .Skip((request.Page - 1) * request.PageSize)
+           .Take(request.PageSize)
+           .OrderBy(x => x.Id)
+           .Select(x => new ProductDto.Index
+           {
+               Id = x.Id,
+               Name = x.Name,
+               Description = x.Description,
+               Price = x.Price.Value,
+               ImageUrl = x.ImageUrl,
+           }).ToListAsync();
+
+        var result = new ProductResult.Index
         {
-            ProductResponse.GetDetail response = new();
-            response.Product = await GetProductById(request.ProductId)
-                .Select(x => new ProductDto.Detail
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                    Price = x.Price.Value,
-                    IsEnabled = x.IsEnabled,
-                    IsInStock = x.InStock,
-                    Imagepath = x.ImageUrl,
-                    CategoryName = x.Category.Name,
-                })
-                .SingleOrDefaultAsync();
-            return response;
-        }
+            Products = items,
+            TotalAmount = totalAmount
+        };
+        return result;
+    }
 
-        public async Task<ProductResponse.GetIndex> GetIndexAsync(ProductRequest.GetIndex request)
+    public async Task<ProductDto.Detail> GetDetailAsync(int productId)
+    {
+        ProductDto.Detail? product = await dbContext.Products.Select(x => new ProductDto.Detail
         {
-            ProductResponse.GetIndex response = new();
-            var query = _products.AsQueryable().AsNoTracking();
+            Id = x.Id,
+            Name = x.Name,
+            Price = x.Price.Value,
+            Description = x.Description,
+            Tags = x.Tags.Select(x => x.Name),
+            ImageUrl = x.ImageUrl,
+            CreatedAt = x.CreatedAt,
+            UpdatedAt = x.UpdatedAt
+        }).SingleOrDefaultAsync(x => x.Id == productId);
 
-            if (!string.IsNullOrWhiteSpace(request.SearchTerm))
-                query = query.Where(x => x.Name.Contains(request.SearchTerm));
+        if (product is null)
+            throw new EntityNotFoundException(nameof(Product),productId);
 
-            if (!string.IsNullOrWhiteSpace(request.Category))
-                query = query.Where(x => x.Category.Name.Equals(request.Category));
+        return product;
+    }
 
-            if (request.MinimumPrice is not null)
-                query = query.Where(x => x.Price.Value >= request.MinimumPrice);
+    public async Task<ProductResult.Create> CreateAsync(ProductDto.Mutate model)
+    {
+        if (await dbContext.Products.AnyAsync(x => x.Name == model.Name))
+            throw new EntityAlreadyExistsException(nameof(Product), nameof(Product.Name), model.Name);
 
-            if (request.MaximumPrice is not null)
-                query = query.Where(x => x.Price.Value <= request.MaximumPrice);
+        Image image = new Image(storageService.BasePath, model.ImageContentType!);
+        Money price = new(model.Price);
+        Product product = new(model.Name!, model.Description!, price, image.FileUri.ToString());
 
-            if (request.OnlyActiveProducts)
-                query = query.Where(x => x.IsEnabled);
+        dbContext.Products.Add(product);
+        await dbContext.SaveChangesAsync();
 
-            response.TotalAmount = query.Count();
+        Uri uploadSas = storageService.GenerateImageUploadSas(image);
 
-            query = query.Take(request.Amount);
-            query = query.Skip(request.Amount * request.Page);
+        ProductResult.Create result = new()
+        {
+            ProductId = product.Id,
+            UploadUri = uploadSas.ToString()
+        };
 
-            query.OrderBy(x => x.Name);
-            response.Products = await query.Select(x => new ProductDto.Index
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Description = x.Description,
-                Price = x.Price.Value,
-                Imagepath = x.ImageUrl,
-            }).ToListAsync();
-            return response;
-        }
+        return result;
+    }
+
+
+    public async Task EditAsync(int productId, ProductDto.Mutate model)
+    {
+        Product? product = await dbContext.Products.SingleOrDefaultAsync(x => x.Id == productId);
+
+        if (product is null)
+            throw new EntityNotFoundException(nameof(Product), productId);
+
+        Money price = new(model.Price);
+        product.Name = model.Name!;
+        product.Description = model.Description!;
+        product.Price = price;
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int productId)
+    {
+        Product? product = await dbContext.Products.SingleOrDefaultAsync(x => x.Id == productId);
+
+        if (product is null)
+            throw new EntityNotFoundException(nameof(Product),productId);
+
+        dbContext.Products.Remove(product);
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task AddTagAsync(int productId, int tagId)
+    {
+        Product? product = await dbContext.Products.SingleOrDefaultAsync(x => x.Id == productId);
+
+        if (product is null)
+            throw new EntityNotFoundException(nameof(Product), productId);
+
+        Tag? tag = await dbContext.Tags.SingleOrDefaultAsync(x => x.Id == tagId);
+
+        if (tag is null)
+            throw new EntityNotFoundException(nameof(Tag), tagId);
+
+        product.Tag(tag);
+
+        await dbContext.SaveChangesAsync();
     }
 }
+

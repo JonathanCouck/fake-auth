@@ -1,25 +1,26 @@
-﻿using Ardalis.GuardClauses;
-using Domain.Common;
-using Domain.Products;
+﻿using System;
+using BogusStore.Domain.Products;
 
-namespace Domain.Orders
+namespace BogusStore.Domain.Orders;
+
+public class OrderLine : Entity
 {
-    public class OrderLine : Entity
+    public Order Order { get; } = default!;
+    public Product Product { get; } = default!;
+    public int Quantity { get; }
+    public Money Price { get; } = default!;
+    public string Description { get; } = default!;
+
+    private OrderLine() { }
+
+    public OrderLine(Order order, OrderItem item)
     {
-        public Product Product { get; }
-        public int Quantity { get; }
-        public Money Price { get; }
-
-        private OrderLine()
-        {
-
-        }
-
-        public OrderLine(Product product, int quantity)
-        {
-            Product = Guard.Against.Null(product, nameof(product));
-            Quantity = Guard.Against.Negative(quantity, nameof(quantity));
-            Price = Product.Price;
-        }
+        Order = Guard.Against.Null(order, nameof(Order));
+        Guard.Against.Null(item, nameof(OrderItem));
+        Quantity = item.Quantity;
+        Product = item.Product;
+        Price = Product.Price.Copy(); // https://github.com/dotnet/efcore/issues/12345
+        Description = Product.Name;
     }
 }
+
