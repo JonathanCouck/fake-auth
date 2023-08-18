@@ -1,16 +1,16 @@
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using BogusStore.Client;
-using Microsoft.AspNetCore.Components.Authorization;
-using BogusStore.Client.Authentication;
-using BogusStore.Shared.Products;
-using BogusStore.Client.Products;
 using Append.Blazor.Sidepanel;
-using BogusStore.Client.Tags;
+using BogusStore.Client;
+using BogusStore.Client.Authentication;
+using BogusStore.Client.Customers;
 using BogusStore.Client.Files;
 using BogusStore.Client.Orders;
+using BogusStore.Client.Products;
+using BogusStore.Client.Tags;
 using BogusStore.Shared.Customers;
-using BogusStore.Client.Customers;
+using BogusStore.Shared.Products;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

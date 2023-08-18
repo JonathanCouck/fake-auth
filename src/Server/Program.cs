@@ -1,6 +1,5 @@
 using BogusStore.Persistence;
 using BogusStore.Server.Authentication;
-using BogusStore.Server.Helper;
 using BogusStore.Server.Middleware;
 using BogusStore.Services;
 using BogusStore.Shared.Products;
@@ -32,7 +31,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<BogusDbContext>();
 
 // (Fake) Jwt Authentication
-JwtHelper.AddAuthentication(builder);
+FakeAuthentication.AddAuthentication(builder);
 // builder.Services.AddHttpClient();
 // builder.Services.AddAuthentication("Fake Authentication")
 //                 .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("Fake Authentication", null);
@@ -64,7 +63,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 
 // Jwt Authentication
-JwtHelper.MapTokenPost(builder, app);
+FakeAuthentication.MapAuthenticationRoutes(builder, app);
 
 app.MapRazorPages();
 app.MapControllers().RequireAuthorization();

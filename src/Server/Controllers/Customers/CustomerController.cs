@@ -24,7 +24,7 @@ public class CustomerController : ControllerBase
     }
 
     [SwaggerOperation("Returns a list of all the customers.")]
-    [HttpGet]
+    [HttpGet, Authorize]
     public async Task<CustomerResult.Index> GetIndex([FromQuery] CustomerRequest.Index request)
     {
         foreach(Claim c in User.Claims)

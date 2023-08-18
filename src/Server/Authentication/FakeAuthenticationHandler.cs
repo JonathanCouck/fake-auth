@@ -4,12 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using BogusStore.Shared.Authentication;
 
 namespace BogusStore.Server.Authentication;
 
 public class FakeAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    public FakeAuthenticationHandler(
+
+	public FakeAuthenticationHandler(
       IOptionsMonitor<AuthenticationSchemeOptions> options,
       ILoggerFactory logger,
       UrlEncoder encoder,
