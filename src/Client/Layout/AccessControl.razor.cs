@@ -11,19 +11,22 @@ public partial class AccessControl
     [Inject] public FakeAuth TempFakeAuth { get; set; } = default!;
     [Inject] public HttpClient HttpClient { get; set; } = default!;
 
+    public string[] ActorNames => TempFakeAuth.ActorNames;
+
     protected override async Task OnInitializedAsync()
     {
-        await TempFakeAuth.InitActorNamesAsync(HttpClient);
+        await TempFakeAuth.SetActorNamesAsync(HttpClient);
     }
 
-    private string? IsActive(ClaimsPrincipal principal)
+    private string? IsActive(string name)
     {
-        return FakeAuthenticationProvider.Current.Identity?.Name == principal.Identity?.Name ? "is-active" : null;
+        return TempFakeAuth.Current.ActorName == name ? "is-active" : null;
     }
 
-    private void ChangePrincipal(ClaimsPrincipal principal)
+    private async Task ChangePrincipal(string name)
     {
-        FakeAuthenticationProvider.ChangeAuthenticationState(principal);
+        Console.WriteLine(name);
+        // await TempFakeAuth.GetAuthenticationStateAsync(HttpClient, name);
     }
 }
 

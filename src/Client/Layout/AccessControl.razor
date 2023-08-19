@@ -1,21 +1,24 @@
 ﻿@inject HttpClient Http
 
+@if (ActorNames != null && ActorNames.Length > 0)
+{
 <div class="navbar-item has-dropdown is-hoverable ">
     <a class="navbar-link">
         Login as
     </a>
 
     <div class="navbar-dropdown is-right">
-
-        @foreach (var claimsPrincipal in FakeAuthenticationProvider.ClaimsPrincipals)
+        @foreach (string name in ActorNames)
         {
-            <a class="navbar-item @IsActive(claimsPrincipal)" @onclick="_ => ChangePrincipal(claimsPrincipal)">
-                @claimsPrincipal.Identity?.Name
+            <a class="navbar-item @IsActive(name)" @onclick="_ => ChangePrincipal(name)">
+                @name
             </a>
         }
+        
     </div>
 
 </div>
 <a class="navbar-item">
-    @FakeAuthenticationProvider.Current.Identity?.Name
-</a>
+    @TempFakeAuth.Current.ActorName
+</a> 
+}

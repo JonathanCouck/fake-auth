@@ -47,7 +47,7 @@ namespace BogusStore.Server.Authentication
 			});
 
 			// Route for creating a token given the actor
-			app.MapPost("/api/security/createToken",
+			app.MapGet("/api/security/createToken",
 			[AllowAnonymous] ([FromQuery] string actorName) =>
 			{
 				ClaimsIdentity? actorWithMatchingClaim = Actors.FirstOrDefault(a =>
@@ -70,12 +70,11 @@ namespace BogusStore.Server.Authentication
 					};
 					var tokenHandler = new JwtSecurityTokenHandler();
 					var token = tokenHandler.CreateToken(tokenDescriptor);
-					var jwtToken = tokenHandler.WriteToken(token);
 					var stringToken = tokenHandler.WriteToken(token);
-					return Results.Ok(new TokenResult(stringToken));
+					return Results.Ok(stringToken);
 				}
 
-				return Results.BadRequest();
+				return Results.BadRequest("The actor wasn't found");
 			});
 		}
 		private class ActorsResult
@@ -90,13 +89,5 @@ namespace BogusStore.Server.Authentication
 		{
 			public string Actor { get; set; } = default!;
 		}
-        private class TokenResult
-        {
-            public string Token { get; set; } = default!;
-            public TokenResult(string token)
-            {
-                Token = token;
-            }
-        }
 	}
 }
