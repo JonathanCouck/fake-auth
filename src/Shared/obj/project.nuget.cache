@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "iGxh3FPXV988G7Bi0a4FaLAyGRUKjfGwKR8ulosxnQSjDCYOdi92bW2dLtYrEaSuDYFY/yQXQU8SHzr4tKfHhA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\jonat\\Documents\\School\\ToegepasteInformatica\\Fake Auth\\src\\Shared\\BogusStore.Shared.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\jonat\\.nuget\\packages\\fluentvalidation\\11.7.1\\fluentvalidation.11.7.1.nupkg.sha512"
+  ],
+  "logs": []
+}

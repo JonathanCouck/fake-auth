@@ -1,0 +1,16 @@
+input[type=number][b-ruwt3uac6o] {
+    width: 4rem;
+    text-align: right;
+}
+
+td:not(:first-child)[b-ruwt3uac6o], th:not(:first-child)[b-ruwt3uac6o] {
+    text-align: right;
+}
+
+td[b-ruwt3uac6o] {
+    vertical-align: middle;
+}
+
+    td.price[b-ruwt3uac6o] {
+        min-width: 6rem;
+    }

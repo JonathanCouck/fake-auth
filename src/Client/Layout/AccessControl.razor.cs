@@ -8,6 +8,13 @@ namespace BogusStore.Client.Layout;
 public partial class AccessControl
 {
     [Inject] public FakeAuthenticationProvider FakeAuthenticationProvider { get; set; } = default!;
+    [Inject] public FakeAuth TempFakeAuth { get; set; } = default!;
+    [Inject] public HttpClient HttpClient { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TempFakeAuth.InitActorNamesAsync(HttpClient);
+    }
 
     private string? IsActive(ClaimsPrincipal principal)
     {

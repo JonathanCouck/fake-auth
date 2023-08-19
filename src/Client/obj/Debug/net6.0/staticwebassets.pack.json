@@ -1,0 +1,49 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\jonat\\Downloads\\csharp-ch-8-example-2-solution\\csharp-ch-8-example-2-solution\\src\\Client\\bin\\Debug\\net6.0\\wwwroot\\_framework\\blazor.webassembly.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js"
+    },
+    {
+      "Id": "C:\\Users\\jonat\\Downloads\\csharp-ch-8-example-2-solution\\csharp-ch-8-example-2-solution\\src\\Client\\obj\\Debug\\net6.0\\build-gz\\NDFidF4X.gz",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "C:\\Users\\jonat\\Downloads\\csharp-ch-8-example-2-solution\\csharp-ch-8-example-2-solution\\src\\Client\\obj\\Debug\\net6.0\\scopedcss\\bundle\\BogusStore.Client.styles.css",
+      "PackagePath": "staticwebassets\\BogusStore.Client.styles.css"
+    },
+    {
+      "Id": "C:\\Users\\jonat\\Downloads\\csharp-ch-8-example-2-solution\\csharp-ch-8-example-2-solution\\src\\Client\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\jonat\\Downloads\\csharp-ch-8-example-2-solution\\csharp-ch-8-example-2-solution\\src\\Client\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "C:\\Users\\jonat\\Downloads\\csharp-ch-8-example-2-solution\\csharp-ch-8-example-2-solution\\src\\Client\\wwwroot\\icon-192.png",
+      "PackagePath": "staticwebassets\\icon-192.png"
+    },
+    {
+      "Id": "C:\\Users\\jonat\\Downloads\\csharp-ch-8-example-2-solution\\csharp-ch-8-example-2-solution\\src\\Client\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.BogusStore.Client.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.build.BogusStore.Client.props",
+      "PackagePath": "build\\BogusStore.Client.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.buildMultiTargeting.BogusStore.Client.props",
+      "PackagePath": "buildMultiTargeting\\BogusStore.Client.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.buildTransitive.BogusStore.Client.props",
+      "PackagePath": "buildTransitive\\BogusStore.Client.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

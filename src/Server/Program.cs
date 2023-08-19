@@ -7,7 +7,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,11 +30,9 @@ builder.Services.AddSwaggerGen(options =>
 // Database
 builder.Services.AddDbContext<BogusDbContext>();
 
-// (Fake) Jwt Authentication
-FakeAuthentication.AddAuthentication(builder);
-// builder.Services.AddHttpClient();
-// builder.Services.AddAuthentication("Fake Authentication")
-//                 .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("Fake Authentication", null);
+// (Fake) Authentication
+//builder.Services.AddAuthentication("Fake Authentication")
+//                .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("Fake Authentication", null);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -62,8 +60,11 @@ app.UseStaticFiles();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 
-// Jwt Authentication
-FakeAuthentication.MapAuthenticationRoutes(builder, app);
+// Fake Authentication routing
+FakeAuth.MapAuthenticationRoutes(builder, app);
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers().RequireAuthorization();

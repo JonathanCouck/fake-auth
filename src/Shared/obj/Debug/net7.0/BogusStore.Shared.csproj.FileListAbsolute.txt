@@ -1,0 +1,24 @@
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\bin\Debug\net7.0\BogusStore.Shared.deps.json
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\bin\Debug\net7.0\BogusStore.Shared.dll
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\bin\Debug\net7.0\BogusStore.Shared.pdb
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\obj\Debug\net7.0\BogusStore.Shared.csproj.AssemblyReference.cache
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\obj\Debug\net7.0\BogusStore.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\obj\Debug\net7.0\BogusStore.Shared.AssemblyInfoInputs.cache
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\obj\Debug\net7.0\BogusStore.Shared.AssemblyInfo.cs
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\obj\Debug\net7.0\BogusStore.Shared.csproj.CoreCompileInputs.cache
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\obj\Debug\net7.0\BogusStore.Shared.dll
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\obj\Debug\net7.0\refint\BogusStore.Shared.dll
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\obj\Debug\net7.0\BogusStore.Shared.pdb
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Shared\obj\Debug\net7.0\ref\BogusStore.Shared.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\bin\Debug\net7.0\BogusStore.Shared.deps.json
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\bin\Debug\net7.0\BogusStore.Shared.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\bin\Debug\net7.0\BogusStore.Shared.pdb
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\obj\Debug\net7.0\BogusStore.Shared.csproj.AssemblyReference.cache
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\obj\Debug\net7.0\BogusStore.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\obj\Debug\net7.0\BogusStore.Shared.AssemblyInfoInputs.cache
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\obj\Debug\net7.0\BogusStore.Shared.AssemblyInfo.cs
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\obj\Debug\net7.0\BogusStore.Shared.csproj.CoreCompileInputs.cache
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\obj\Debug\net7.0\BogusStore.Shared.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\obj\Debug\net7.0\refint\BogusStore.Shared.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\obj\Debug\net7.0\BogusStore.Shared.pdb
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Shared\obj\Debug\net7.0\ref\BogusStore.Shared.dll

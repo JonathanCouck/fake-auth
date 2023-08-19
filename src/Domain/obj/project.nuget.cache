@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "egY/qK/T/pBUXlQkOPRWWkuEz4nHWmuodfDvcOCX9RH/9ngxR49nrlGSDNYrfewkRj5/sTlTQ3+72McRJeSU0g==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\jonat\\Documents\\School\\ToegepasteInformatica\\Fake Auth\\src\\Domain\\BogusStore.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\jonat\\.nuget\\packages\\ardalis.guardclauses\\4.1.1\\ardalis.guardclauses.4.1.1.nupkg.sha512",
+    "C:\\Users\\jonat\\.nuget\\packages\\mimetypesmap\\1.0.8\\mimetypesmap.1.0.8.nupkg.sha512"
+  ],
+  "logs": []
+}

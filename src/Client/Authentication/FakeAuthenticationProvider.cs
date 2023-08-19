@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.Data;
 using System.Security.Claims;
 using BogusStore.Shared.Authentication;
+using Microsoft.AspNetCore.Components;
 
 namespace BogusStore.Client.Authentication;
 

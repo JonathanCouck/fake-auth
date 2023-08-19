@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\BogusStore.Client.props" />
+</Project>

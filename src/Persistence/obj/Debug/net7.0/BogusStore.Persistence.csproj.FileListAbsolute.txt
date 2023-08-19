@@ -1,0 +1,34 @@
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\bin\Debug\net7.0\BogusStore.Persistence.deps.json
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\bin\Debug\net7.0\BogusStore.Persistence.dll
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\bin\Debug\net7.0\BogusStore.Persistence.pdb
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\bin\Debug\net7.0\BogusStore.Domain.dll
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\bin\Debug\net7.0\BogusStore.Fakers.dll
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\bin\Debug\net7.0\BogusStore.Domain.pdb
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\bin\Debug\net7.0\BogusStore.Fakers.pdb
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.csproj.AssemblyReference.cache
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.AssemblyInfoInputs.cache
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.AssemblyInfo.cs
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.csproj.CoreCompileInputs.cache
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.csproj.CopyComplete
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.dll
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\refint\BogusStore.Persistence.dll
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.pdb
+C:\Users\jonat\Downloads\csharp-ch-8-example-2-solution\csharp-ch-8-example-2-solution\src\Persistence\obj\Debug\net7.0\ref\BogusStore.Persistence.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\bin\Debug\net7.0\BogusStore.Persistence.deps.json
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\bin\Debug\net7.0\BogusStore.Persistence.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\bin\Debug\net7.0\BogusStore.Persistence.pdb
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\bin\Debug\net7.0\BogusStore.Domain.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\bin\Debug\net7.0\BogusStore.Fakers.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\bin\Debug\net7.0\BogusStore.Domain.pdb
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\bin\Debug\net7.0\BogusStore.Fakers.pdb
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.csproj.AssemblyReference.cache
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.AssemblyInfoInputs.cache
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.AssemblyInfo.cs
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.csproj.CoreCompileInputs.cache
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.csproj.CopyComplete
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\refint\BogusStore.Persistence.dll
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\BogusStore.Persistence.pdb
+C:\Users\jonat\Documents\School\ToegepasteInformatica\Fake Auth\src\Persistence\obj\Debug\net7.0\ref\BogusStore.Persistence.dll

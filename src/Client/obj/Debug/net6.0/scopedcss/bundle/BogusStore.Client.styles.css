@@ -1,0 +1,111 @@
+@import '_content/Append.Blazor.Sidepanel/Append.Blazor.Sidepanel.bundle.scp.css';
+
+/* /Layout/MainLayout.razor.rz.scp.css */
+.page[b-1qaw6zr01f] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main[b-1qaw6zr01f] {
+    flex: 1;
+}
+
+.sidebar[b-1qaw6zr01f] {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+.top-row[b-1qaw6zr01f] {
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #d6d5d5;
+    justify-content: flex-end;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+    .top-row[b-1qaw6zr01f]  a, .top-row[b-1qaw6zr01f]  .btn-link {
+        white-space: nowrap;
+        margin-left: 1.5rem;
+        text-decoration: none;
+    }
+
+    .top-row[b-1qaw6zr01f]  a:hover, .top-row[b-1qaw6zr01f]  .btn-link:hover {
+        text-decoration: underline;
+    }
+
+    .top-row[b-1qaw6zr01f]  a:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+@media (max-width: 640.98px) {
+    .top-row:not(.auth)[b-1qaw6zr01f] {
+        display: none;
+    }
+
+    .top-row.auth[b-1qaw6zr01f] {
+        justify-content: space-between;
+    }
+
+    .top-row[b-1qaw6zr01f]  a, .top-row[b-1qaw6zr01f]  .btn-link {
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 641px) {
+    .page[b-1qaw6zr01f] {
+        flex-direction: row;
+    }
+
+    .sidebar[b-1qaw6zr01f] {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+
+    .top-row[b-1qaw6zr01f] {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .top-row.auth[b-1qaw6zr01f]  a:first-child {
+        flex: 1;
+        text-align: right;
+        width: 0;
+    }
+
+    .top-row[b-1qaw6zr01f], article[b-1qaw6zr01f] {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+/* /Orders/Components/ShoppingCart.razor.rz.scp.css */
+input[type=number][b-ruwt3uac6o] {
+    width: 4rem;
+    text-align: right;
+}
+
+td:not(:first-child)[b-ruwt3uac6o], th:not(:first-child)[b-ruwt3uac6o] {
+    text-align: right;
+}
+
+td[b-ruwt3uac6o] {
+    vertical-align: middle;
+}
+
+    td.price[b-ruwt3uac6o] {
+        min-width: 6rem;
+    }
+/* /Products/Components/ProductListItem.razor.rz.scp.css */
+.card[b-t0tcuuh3oo] {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card-footer[b-t0tcuuh3oo] {
+    margin-top: auto;
+}
