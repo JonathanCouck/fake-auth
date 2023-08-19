@@ -33,7 +33,8 @@ builder.Services.AddDbContext<BogusDbContext>();
 // (Fake) Authentication
 //builder.Services.AddAuthentication("Fake Authentication")
 //                .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("Fake Authentication", null);
-
+builder.Services.AddAuthentication("Fake Authentication")
+                .AddScheme<AuthenticationSchemeOptions, FakeAuthHandler>("Fake Authentication", null);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -61,7 +62,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 
 // Fake Authentication routing
-FakeAuth.MapAuthenticationRoutes(builder, app);
+FakeAuthHandler.MapAuthenticationRoutes(builder, app);
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -204,14 +204,14 @@
       "netstandard.dll": "sha256-kj5cBXzwPYC+HD+P8+6VybY34JtEzjXjMIHXEI3hIiM=",
       "System.Private.CoreLib.dll": "sha256-Awk1lCiFfH7r9AAZfBtGqS8rhv6UJ5lUu3yF6HDH3tQ=",
       "BogusStore.Shared.dll": "sha256-EM\/lt01YszVWpgj+Y8NaVanrMWdwTwrOzhSoKZlJiK8=",
-      "BogusStore.Client.dll": "sha256-LB0vIEasxYqsGHlg+3W+hnlQSyiwzfW0SGS1RnVtmfs="
+      "BogusStore.Client.dll": "sha256-MtbIDNGdzI7zjCNl8JcGYKpHHKUi+TyZE0JIvCO3Thc="
     },
     "extensions": null,
     "lazyAssembly": null,
     "libraryInitializers": null,
     "pdb": {
       "BogusStore.Shared.pdb": "sha256-\/UXXEbrA9r+HCaJQkRC2f3LVIWhxAZiW8kOdY6HTAoM=",
-      "BogusStore.Client.pdb": "sha256-6F6PEJeGhBqn2Ktv6FYX\/R3lv4oWR4MAHrJdytneLAo="
+      "BogusStore.Client.pdb": "sha256-k5Xy7Ri8Q4CcNaSydkMcdzN+Ds0j5Q3VnnqPsjJnQwM="
     },
     "runtime": {
       "dotnet.7.0.0.5hfdwvbqwh.js": "sha256-2jNLve8W0sST0LAebgAc1IwSnGhkbjOKO8QPWWiJssI=",

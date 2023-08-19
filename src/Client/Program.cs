@@ -17,15 +17,13 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddAuthorizationCore();
-builder.Services.AddSingleton<FakeAuth>();
-builder.Services.AddSingleton<FakeAuthenticationProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<FakeAuthenticationProvider>());
-builder.Services.AddTransient<FakeAuthorizationMessageHandler>();
 
 builder.Services.AddHttpClient("Project.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
                 .AddHttpMessageHandler<FakeAuthorizationMessageHandler>();
 
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Project.ServerAPI"));
+builder.Services.AddSingleton<FakeAuthProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<FakeAuthProvider>());
+builder.Services.AddTransient<FakeAuthorizationMessageHandler>();
 
 builder.Services.AddSidepanel();
 
