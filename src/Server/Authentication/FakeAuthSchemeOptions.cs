@@ -25,6 +25,7 @@ namespace BogusStore.Server.Authentication
                 new Claim(ClaimTypes.NameIdentifier, "1"),
                 new Claim(ClaimTypes.Name, "Administrator"),
                 new Claim(ClaimTypes.Role, Roles.Administrator),
+                new Claim(ClaimTypes.Role, Roles.Customer),
             }),
             new ClaimsIdentity(new[]
             {

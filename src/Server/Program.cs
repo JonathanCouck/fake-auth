@@ -48,6 +48,7 @@ builder.Services.AddAuthentication("Fake Authentication")
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
                 new Claim(ClaimTypes.Name, "Admin"),
+                new Claim(ClaimTypes.Role, Roles.Customer),
                 new Claim(ClaimTypes.Role, Roles.Administrator),
             }),
             new ClaimsIdentity(new[]
@@ -86,7 +87,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 
 // Fake Authentication routing
-FakeAuthHandler.MapAuthenticationRoutes(builder, app);
+//FakeAuthHandler.MapAuthenticationRoutes(builder, app);
 
 app.UseAuthentication();
 app.UseAuthorization();

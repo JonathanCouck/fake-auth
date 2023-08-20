@@ -13,7 +13,6 @@ namespace BogusStore.Server.Authentication
 {
 	public class FakeAuthHandler: AuthenticationHandler<FakeAuthSchemeOptions>
     {
-
         public FakeAuthHandler(
 			IOptionsMonitor<FakeAuthSchemeOptions> options,
 			ILoggerFactory logger,
@@ -70,6 +69,7 @@ namespace BogusStore.Server.Authentication
 					var audience = builder.Configuration["Jwt:Audience"];
 					var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
 					var claims = personaWithMatchingName.Claims.ToArray();
+					
 					var tokenDescriptor = new SecurityTokenDescriptor
 					{
 						Subject = new ClaimsIdentity(claims, "Fake Authentication"),
@@ -79,8 +79,10 @@ namespace BogusStore.Server.Authentication
 						SigningCredentials = new SigningCredentials
 						(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
 					};
-					var tokenHandler = new JwtSecurityTokenHandler();
-					var token = tokenHandler.CreateToken(tokenDescriptor);
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    tokenHandler.InboundClaimTypeMap.Clear();
+					
+                    var token = tokenHandler.CreateToken(tokenDescriptor);
 					var stringToken = tokenHandler.WriteToken(token);
 					return Results.Ok(stringToken);
 				}
