@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using BogusStore.Shared.Authentication;
+﻿using BogusStore.Shared.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,35 +11,11 @@ using System.Text.Encodings.Web;
 
 namespace BogusStore.Server.Authentication
 {
-	public class FakeAuthHandler: AuthenticationHandler<AuthenticationSchemeOptions>
+	public class FakeAuthHandler: AuthenticationHandler<FakeAuthSchemeOptions>
     {
-        private static IEnumerable<ClaimsIdentity> _personas => new List<ClaimsIdentity>
-        {
-            new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Actor, "Anonymous"),
-            }),
-            new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(ClaimTypes.Actor, "Administrator"),
-                new Claim(ClaimTypes.Role, Roles.Administrator),
-            }, "Fake Authentication"),
-            new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "2"),
-                new Claim(ClaimTypes.Actor, "Customer"),
-                new Claim(ClaimTypes.Role, Roles.Customer),
-            }, "Fake Authentication")
-        };
-
-        private static List<string> _personaNames = _personas
-            .SelectMany(a => a.Claims.Where(c => c.Type == ClaimTypes.Actor && !string.IsNullOrEmpty(c.Value)))
-            .Select(c => c.Value)
-            .ToList();
 
         public FakeAuthHandler(
-			IOptionsMonitor<AuthenticationSchemeOptions> options,
+			IOptionsMonitor<FakeAuthSchemeOptions> options,
 			ILoggerFactory logger,
 			UrlEncoder encoder,
 			ISystemClock clock)
@@ -71,21 +46,24 @@ namespace BogusStore.Server.Authentication
 			return await Task.FromResult(AuthenticateResult.NoResult());
         }
 
-		public static void MapAuthenticationRoutes(WebApplicationBuilder builder, WebApplication app)
+		public void MapAuthenticationRoutes(WebApplicationBuilder builder, WebApplication app)
 		{
-			// Route for getting an array of all actor names
-			app.MapGet("/api/security/personas",
-			[HttpGet, Authorize(Roles = Roles.Administrator)] () =>
-			{
-				return Results.Ok(_personaNames);
-			});
+            // Route for getting an array of all persona names
+            app.MapGet("/api/security/personas",
+            [HttpGet, AllowAnonymous] () =>
+            {
+                return Results.Ok(Options.Personas
+					.SelectMany(a => a.Claims.Where(c => c.Type == ClaimTypes.Name && !string.IsNullOrEmpty(c.Value)))
+					.Select(c => c.Value)
+					.ToList());
+            });
 
-			// Route for creating a token given the actor
+			// Route for creating a token given the persona name
 			app.MapGet("/api/security/createToken",
 			[HttpGet, AllowAnonymous] ([FromQuery] string personaName) =>
 			{
-				ClaimsIdentity? personaWithMatchingName = _personas.FirstOrDefault(a =>
-					a.FindFirst(ClaimTypes.Actor)?.Value == personaName);
+				ClaimsIdentity? personaWithMatchingName = Options.Personas.FirstOrDefault(a =>
+					a.FindFirst(ClaimTypes.Name)?.Value == personaName);
 				if (personaWithMatchingName != null)
 				{
 					var issuer = builder.Configuration["Jwt:Issuer"];

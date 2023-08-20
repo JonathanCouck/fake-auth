@@ -2,12 +2,14 @@ using BogusStore.Persistence;
 using BogusStore.Server.Authentication;
 using BogusStore.Server.Middleware;
 using BogusStore.Services;
+using BogusStore.Shared.Authentication;
 using BogusStore.Shared.Products;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,10 +33,32 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<BogusDbContext>();
 
 // (Fake) Authentication
-//builder.Services.AddAuthentication("Fake Authentication")
-//                .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("Fake Authentication", null);
 builder.Services.AddAuthentication("Fake Authentication")
-                .AddScheme<AuthenticationSchemeOptions, FakeAuthHandler>("Fake Authentication", null);
+    .AddScheme<FakeAuthSchemeOptions, FakeAuthHandler>("Fake Authentication", options =>
+    {
+        options.Personas = new List<ClaimsIdentity>
+        {
+            new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "0"),
+                new Claim(ClaimTypes.Name, "Anoniem"),
+                new Claim(ClaimTypes.Role, Roles.Anonymous),
+            }),
+            new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "1"),
+                new Claim(ClaimTypes.Name, "Admin"),
+                new Claim(ClaimTypes.Role, Roles.Administrator),
+            }),
+            new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "2"),
+                new Claim(ClaimTypes.Name, "Klant"),
+                new Claim(ClaimTypes.Role, Roles.Customer),
+            }),
+        };
+        Console.WriteLine();
+    });
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
