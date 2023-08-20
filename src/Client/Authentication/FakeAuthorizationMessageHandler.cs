@@ -14,7 +14,7 @@ public class FakeAuthorizationMessageHandler : DelegatingHandler
     }
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
     {
-        if(fakeAuthProvider.Current.ActorName == "Unauthorized")
+        if(fakeAuthProvider.Current == null || fakeAuthProvider.Current.Name == "Unauthorized")
         {
             return base.SendAsync(request, cancellationToken);
         }
@@ -23,4 +23,3 @@ public class FakeAuthorizationMessageHandler : DelegatingHandler
         return base.SendAsync(request, cancellationToken);
     }
 }
-

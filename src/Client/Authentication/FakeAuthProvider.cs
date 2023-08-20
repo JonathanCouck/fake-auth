@@ -8,8 +8,8 @@ namespace BogusStore.Client.Authentication
     {
         private readonly HttpClient _http;
 
-        public string[] ActorNames = default!;
-        public Actor Current { get; private set; } = default!;
+        public string[] PersonaNames = default!;
+        public Persona Current { get; private set; } = default!;
 
         public FakeAuthProvider(HttpClient http)
         {
@@ -20,49 +20,46 @@ namespace BogusStore.Client.Authentication
         {
             if (Current != null)
             {
-                Console.WriteLine(Current.ActorName);
                 return Task.FromResult(new AuthenticationState(new(new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Role, Current.ActorName),
+                    new Claim(ClaimTypes.Role, Current.Name),
                 }, "Fake Authentication"))));
             }
-            Console.WriteLine("No current");
-            return Task.FromResult(new AuthenticationState(new(new ClaimsIdentity(new Claim[] {
-                new Claim(ClaimTypes.Name, "Anonymous")
-            }, "Fake Authentication"))));
+            return Task.FromResult(new AuthenticationState(new(new ClaimsIdentity(new Claim[] {}, "Fake Authentication"))));
         }
 
-        public async Task SetActorNamesAsync()
+        public async Task SetPersonaNamesAsync()
         {
-            HttpResponseMessage response = await _http.GetAsync("https://localhost:5001/api/security/actors");
+            HttpResponseMessage response = await _http.GetAsync("https://localhost:5001/api/security/personas");
             if (response.IsSuccessStatusCode)
             {
-                ActorNames = await response.Content.ReadFromJsonAsync<string[]>();
+                PersonaNames = await response.Content.ReadFromJsonAsync<string[]>();
                 await ChangeAuthenticationStateAsync("Customer");
             }
         }
 
-        public async Task ChangeAuthenticationStateAsync(string actorName)
+        public async Task ChangeAuthenticationStateAsync(string name)
         {
-            HttpResponseMessage response = await _http.GetAsync($"https://localhost:5001/api/security/createToken?actorName={actorName}");
+            HttpResponseMessage response = await _http.GetAsync($"https://localhost:5001/api/security/createToken?personaName={name}");
             if (response.IsSuccessStatusCode)
             {
-                string token = await response.Content.ReadFromJsonAsync<string>();
-                if (token != null)
+                string personaToken = await response.Content.ReadFromJsonAsync<string>();
+                if (personaToken != null)
                 {
-                    Current = new(actorName, token);
+                    Current = new(name, personaToken);
+                    NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
                 }
             }
         }
     }
 
-    public class Actor
+    public class Persona
     {
-        public string ActorName { get; set; } = default!;
+        public string Name { get; set; } = default!;
         public string Token { get; set; } = default!;
-        public Actor(string actorName, string token)
+        public Persona(string name, string token)
         {
-            ActorName = actorName;
+            Name = name;
             Token = token;
         }
     }

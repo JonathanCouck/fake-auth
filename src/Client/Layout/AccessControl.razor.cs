@@ -10,16 +10,16 @@ public partial class AccessControl
     [Inject] public FakeAuthProvider TempFakeAuth { get; set; } = default!;
     [Inject] public HttpClient HttpClient { get; set; } = default!;
 
-    public string[] ActorNames => TempFakeAuth.ActorNames;
+    public string[] ActorNames => TempFakeAuth.PersonaNames;
 
     protected override async Task OnInitializedAsync()
     {
-        await TempFakeAuth.SetActorNamesAsync();
+        await TempFakeAuth.SetPersonaNamesAsync();
     }
     
     private string? IsActive(string name)
     {
-        return TempFakeAuth.Current.ActorName == name ? "is-active" : null;
+        return TempFakeAuth.Current.Name == name ? "is-active" : null;
     }
 
     private async Task ChangePrincipal(string name)

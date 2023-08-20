@@ -14,7 +14,7 @@ namespace BogusStore.Server.Authentication
 {
 	public class FakeAuthHandler: AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private static IEnumerable<ClaimsIdentity> _actors => new List<ClaimsIdentity>
+        private static IEnumerable<ClaimsIdentity> _personas => new List<ClaimsIdentity>
         {
             new ClaimsIdentity(new[]
             {
@@ -34,16 +34,16 @@ namespace BogusStore.Server.Authentication
             }, "Fake Authentication")
         };
 
-        private static List<string> _actorNames = _actors
+        private static List<string> _personaNames = _personas
             .SelectMany(a => a.Claims.Where(c => c.Type == ClaimTypes.Actor && !string.IsNullOrEmpty(c.Value)))
             .Select(c => c.Value)
             .ToList();
 
         public FakeAuthHandler(
-          IOptionsMonitor<AuthenticationSchemeOptions> options,
-          ILoggerFactory logger,
-          UrlEncoder encoder,
-          ISystemClock clock)
+			IOptionsMonitor<AuthenticationSchemeOptions> options,
+			ILoggerFactory logger,
+			UrlEncoder encoder,
+			ISystemClock clock)
         : base(options, logger, encoder, clock) { }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -55,32 +55,14 @@ namespace BogusStore.Server.Authentication
                 var authTokenNoBearer = authToken.ToString().Substring("Bearer ".Length);
                 IEnumerable<Claim> newClaims = new JwtSecurityTokenHandler().ReadJwtToken(authTokenNoBearer).Claims;
                 claims.AddRange(newClaims);
-                Console.WriteLine();
             }
-
-            if (Context.Request.Headers.TryGetValue("UserId", out var userId))
-            {
-                claims.Add(new Claim(ClaimTypes.NameIdentifier, userId!));
-            }
-
-            if (Context.Request.Headers.TryGetValue("Role", out var roles))
-            {
-                claims.Add(new Claim(ClaimTypes.Role, roles!));
-            }
-
-            if (Context.Request.Headers.TryGetValue("Email", out var email))
-            {
-                claims.Add(new Claim(ClaimTypes.Email, email!));
-            }
-
-            if (Context.Request.Headers.TryGetValue("Name", out var name))
-            {
-                claims.Add(new Claim(ClaimTypes.Name, name!));
-            }
-
+            
             if (claims.Any())
             {
-                var identity = new ClaimsIdentity(claims, "Fake Authentication");
+                var identity = new ClaimsIdentity(new[]
+				{
+					new Claim(ClaimTypes.Role, Roles.Administrator)
+				}, "Fake Authentication");
                 var principal = new ClaimsPrincipal(identity);
                 var ticket = new AuthenticationTicket(principal, "Fake Authentication");
                 return await Task.FromResult(AuthenticateResult.Success(ticket));
@@ -92,33 +74,32 @@ namespace BogusStore.Server.Authentication
 		public static void MapAuthenticationRoutes(WebApplicationBuilder builder, WebApplication app)
 		{
 			// Route for getting an array of all actor names
-			app.MapGet("/api/security/actors",
-			[HttpGet, AllowAnonymous] () =>
+			app.MapGet("/api/security/personas",
+			[HttpGet, Authorize(Roles = Roles.Administrator)] () =>
 			{
-				return Results.Ok(_actorNames);
+				return Results.Ok(_personaNames);
 			});
 
 			// Route for creating a token given the actor
 			app.MapGet("/api/security/createToken",
-			[HttpGet, AllowAnonymous] ([FromQuery] string actorName) =>
+			[HttpGet, AllowAnonymous] ([FromQuery] string personaName) =>
 			{
-				ClaimsIdentity? actorWithMatchingClaim = _actors.FirstOrDefault(a =>
-					a.FindFirst(ClaimTypes.Actor)?.Value == actorName);
-				if (actorWithMatchingClaim != null)
+				ClaimsIdentity? personaWithMatchingName = _personas.FirstOrDefault(a =>
+					a.FindFirst(ClaimTypes.Actor)?.Value == personaName);
+				if (personaWithMatchingName != null)
 				{
 					var issuer = builder.Configuration["Jwt:Issuer"];
 					var audience = builder.Configuration["Jwt:Audience"];
 					var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-					var claims = actorWithMatchingClaim.Claims.ToArray();
+					var claims = personaWithMatchingName.Claims.ToArray();
 					var tokenDescriptor = new SecurityTokenDescriptor
 					{
-						Subject = new ClaimsIdentity(claims),
+						Subject = new ClaimsIdentity(claims, "Fake Authentication"),
 						Expires = DateTime.UtcNow.AddMinutes(5),
 						Issuer = issuer,
 						Audience = audience,
 						SigningCredentials = new SigningCredentials
-						(new SymmetricSecurityKey(key),
-						SecurityAlgorithms.HmacSha512Signature)
+						(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
 					};
 					var tokenHandler = new JwtSecurityTokenHandler();
 					var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -126,21 +107,21 @@ namespace BogusStore.Server.Authentication
 					return Results.Ok(stringToken);
 				}
 
-				return Results.BadRequest("The actor wasn't found");
+				return Results.BadRequest($"The persona with name {personaName} wasn't found");
 			});
 		}
 
-        private class ActorsResult
+        private class PersonaNamesResult
 		{
-			public List<string> Actors { get; set; } = default!;
-			public ActorsResult(List<string> actors)
+			public List<string> PersonaNames { get; set; } = default!;
+			public PersonaNamesResult(List<string> actors)
 			{
-				Actors = actors;
+				PersonaNames = actors;
 			}
 		}
 		private class TokenRequest
 		{
-			public string Actor { get; set; } = default!;
+			public string PersonaToken { get; set; } = default!;
 		}
 	}
 }
