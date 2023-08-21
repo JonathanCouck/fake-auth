@@ -1,15 +1,11 @@
 using BogusStore.Persistence;
-using BogusStore.Server.Authentication;
 using BogusStore.Server.Middleware;
 using BogusStore.Services;
-using BogusStore.Shared.Authentication;
 using BogusStore.Shared.Products;
+using FakeAuth.Server.Extensions;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,34 +28,9 @@ builder.Services.AddSwaggerGen(options =>
 // Database
 builder.Services.AddDbContext<BogusDbContext>();
 
-// (Fake) Authentication
-builder.Services.AddAuthentication("Fake Authentication")
-    .AddScheme<FakeAuthSchemeOptions, FakeAuthHandler>("Fake Authentication", options =>
-    {
-        options.Personas = new List<ClaimsIdentity>
-        {
-            new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "0"),
-                new Claim(ClaimTypes.Name, "Anoniem"),
-                new Claim(ClaimTypes.Role, Roles.Anonymous),
-            }),
-            new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(ClaimTypes.Name, "Admin"),
-                new Claim(ClaimTypes.Role, Roles.Customer),
-                new Claim(ClaimTypes.Role, Roles.Administrator),
-            }),
-            new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "2"),
-                new Claim(ClaimTypes.Name, "Klant"),
-                new Claim(ClaimTypes.Role, Roles.Customer),
-            }),
-        };
-        Console.WriteLine();
-    });
+// Fake Authentication
+builder.AddFakeAuthentication();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -85,10 +56,6 @@ app.UseStaticFiles();
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
-
-// Fake Authentication routing
-FakeAuthHandler.MapAuthenticationRoutes(builder, app);
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -98,7 +65,8 @@ app.MapFallbackToFile("index.html");
 
 
 using (var scope = app.Services.CreateScope())
-{ // Require a DbContext from the service provider and seed the database.
+{
+    // Require a DbContext from the service provider and seed the database.
     var dbContext = scope.ServiceProvider.GetRequiredService<BogusDbContext>();
     FakeSeeder seeder = new(dbContext);
     seeder.Seed();

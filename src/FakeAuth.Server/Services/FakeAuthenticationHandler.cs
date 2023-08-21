@@ -1,130 +1,70 @@
-using BogusStore.Shared.Authentication;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Encodings.Web;
 
-namespace BogusStore.Server.Authentication
+namespace FakeAuth.Server.Services;
+
+public class FakeAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    public class FakeAuthHandler : AuthenticationHandler<FakeAuthSchemeOptions>
+    private readonly FakeIdentityService fakeIdentityService;
+
+    private readonly JWTConfig jwtConfig;
+
+    public FakeAuthenticationHandler(
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder,
+        ISystemClock clock,
+        FakeIdentityService fakeIdentityService,
+        JWTConfig jwtConfig
+    ) : base(options, logger, encoder, clock)
     {
-        private static IEnumerable<ClaimsIdentity> _personas = new List<ClaimsIdentity>
-        {
-            new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "0"),
-                new Claim(ClaimTypes.Name, "Anonymous"),
-                new Claim(ClaimTypes.Role, Roles.Anonymous),
-            }),
-            new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(ClaimTypes.Name, "Administrator"),
-                new Claim(ClaimTypes.Role, Roles.Administrator),
-                new Claim(ClaimTypes.Role, Roles.Customer),
-            }),
-            new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "2"),
-                new Claim(ClaimTypes.Name, "Customer"),
-                new Claim(ClaimTypes.Role, Roles.Customer),
-            }),
-        };
-        public FakeAuthHandler(
-            IOptionsMonitor<FakeAuthSchemeOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock)
-        : base(options, logger, encoder, clock) { }
+        this.fakeIdentityService = fakeIdentityService;
+        this.jwtConfig = jwtConfig;
+    }
 
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
-            List<Claim> claims = new();
-
-            if (Context.Request.Headers.TryGetValue("Authorization", out var authToken))
-            {
-                var authTokenNoBearer = authToken.ToString().Substring("Bearer ".Length);
-                IEnumerable<Claim> newClaims = new JwtSecurityTokenHandler().ReadJwtToken(authTokenNoBearer).Claims;
-                claims.AddRange(newClaims);
-            }
-
-            if (claims.Any())
-            {
-                var identity = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Role, Roles.Administrator)
-                }, "Fake Authentication");
-                var principal = new ClaimsPrincipal(identity);
-                var ticket = new AuthenticationTicket(principal, "Fake Authentication");
-                return await Task.FromResult(AuthenticateResult.Success(ticket));
-            }
-
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        if (!Context.Request.Headers.TryGetValue("Authorization", out var authHeader))
             return await Task.FromResult(AuthenticateResult.NoResult());
-        }
 
-        public static void MapAuthenticationRoutes(WebApplicationBuilder builder, WebApplication app)
+        var accessToken = authHeader.FirstOrDefault()?[7..];
+        if (accessToken == null)
+            return await Task.FromResult(AuthenticateResult.NoResult());
+
+        var jwtHandler = new JwtSecurityTokenHandler();
+        var securityKey = new SymmetricSecurityKey(jwtConfig.GetKeyAsBytes());
+        var tokenValidationParameters = new TokenValidationParameters
         {
-            // Route for getting an array of all persona names
-            app.MapGet("/api/security/personas",
-            [HttpGet, AllowAnonymous] () =>
-            {
-                return Results.Ok(_personas
-                    .SelectMany(a => a.Claims.Where(c => c.Type == ClaimTypes.Name && !string.IsNullOrEmpty(c.Value)))
-                    .Select(c => c.Value)
-                    .ToList());
-            });
-
-            // Route for creating a token given the persona name
-            app.MapGet("/api/security/createToken",
-            [HttpGet, AllowAnonymous] ([FromQuery] string personaName) =>
-            {
-                ClaimsIdentity? personaWithMatchingName = _personas.FirstOrDefault(a =>
-                    a.FindFirst(ClaimTypes.Name)?.Value == personaName);
-                if (personaWithMatchingName != null)
-                {
-                    var issuer = builder.Configuration["Jwt:Issuer"];
-                    var audience = builder.Configuration["Jwt:Audience"];
-                    var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-                    var claims = personaWithMatchingName.Claims.ToArray();
-
-                    var tokenDescriptor = new SecurityTokenDescriptor
-                    {
-                        Subject = new ClaimsIdentity(claims, "Fake Authentication"),
-                        Expires = DateTime.UtcNow.AddMinutes(5),
-                        Issuer = issuer,
-                        Audience = audience,
-                        SigningCredentials = new SigningCredentials
-                        (new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
-                    };
-                    var tokenHandler = new JwtSecurityTokenHandler();
-                    tokenHandler.InboundClaimTypeMap.Clear();
-
-                    var token = tokenHandler.CreateToken(tokenDescriptor);
-                    var stringToken = tokenHandler.WriteToken(token);
-                    return Results.Ok(stringToken);
-                }
-
-                return Results.BadRequest($"The persona with name {personaName} wasn't found");
-            });
-        }
-
-        private class PersonaNamesResult
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = securityKey,
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+        try
         {
-            public List<string> PersonaNames { get; set; } = default!;
-            public PersonaNamesResult(List<string> actors)
-            {
-                PersonaNames = actors;
-            }
+            var claimsPrincipal = jwtHandler.ValidateToken(accessToken, tokenValidationParameters, out var validatedToken);
+            // Token is valid
+            var nameIdentifier = claimsPrincipal.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+            var fakeIdentity = fakeIdentityService.FindIdentityForIdentifier(nameIdentifier);
+            if (fakeIdentity == null)
+                return await Task.FromResult(AuthenticateResult.NoResult());
+
+
+            var identity = fakeIdentityService.ToClaimsIdentity(fakeIdentity, Scheme.Name);
+            var principal = new ClaimsPrincipal(identity);
+            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+            return await Task.FromResult(AuthenticateResult.Success(ticket));
         }
-        private class TokenRequest
+        catch (SecurityTokenException)
         {
-            public string PersonaToken { get; set; } = default!;
+            return await Task.FromResult(AuthenticateResult.NoResult());
         }
     }
 }

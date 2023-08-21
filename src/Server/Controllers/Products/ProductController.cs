@@ -3,7 +3,6 @@ using BogusStore.Shared.Products;
 using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using BogusStore.Shared.Authentication;
-using System.Security.Claims;
 
 namespace BogusStore.Server.Controllers.Products;
 

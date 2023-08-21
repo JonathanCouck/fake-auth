@@ -3,7 +3,6 @@
 public static class Roles
 {
     public const string Administrator = "Administrator";
-    public const string Customer = "Customer";
-    public const string Anonymous = "Anonymous";
+    public static string Customer = "Customer";
 }
 
