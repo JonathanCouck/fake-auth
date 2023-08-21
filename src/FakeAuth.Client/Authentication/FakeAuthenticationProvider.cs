@@ -1,43 +1,74 @@
-﻿using System;
-using Microsoft.AspNetCore.Components.Authorization;
-using System.Data;
+using System.Net.Http.Json;
 using System.Security.Claims;
-using BogusStore.Shared.Authentication;
-using Microsoft.AspNetCore.Components;
+using FakeAuth.Shared;
+using Microsoft.AspNetCore.Components.Authorization;
 
-namespace BogusStore.Client.Authentication;
+namespace FakeAuth.Client.Authentication;
 
 public class FakeAuthenticationProvider : AuthenticationStateProvider
 {
+    private const string Endpoint = "api/fake-login";
+
+    private readonly Lazy<HttpClient> client;
+
+    public FakeAuthenticationProvider(IHttpClientFactory clientFactory, string httpClientName)
+    {
+        // Issues with initializing HTTPClient via DI 
+        // Manually lazy loading
+        // See https://github.com/dotnet/aspnetcore/issues/33787
+        client = new Lazy<HttpClient>(() => clientFactory.CreateClient(httpClientName));
+    }
+
     public static ClaimsPrincipal Anonymous => new(new ClaimsIdentity(new[]
     {
-            new Claim(ClaimTypes.Name, "Anonymous"),
+        new Claim(ClaimTypes.Name, "Anonymous"),
+        new Claim(ClaimTypes.NameIdentifier, "0"),
     }));
 
-    public static ClaimsPrincipal Administrator => new(new ClaimsIdentity(new[]
+    public IEnumerable<ClaimsPrincipal> ClaimsPrincipals { get; set; } = new[] { Anonymous };
+    public ClaimsPrincipal Current { get; private set; } = Anonymous;
+
+
+    public async Task<List<ClaimsPrincipal>> GetIdentities()
     {
-        new Claim(ClaimTypes.NameIdentifier, "1"),
-        new Claim(ClaimTypes.Name, "Administrator"),
-        new Claim(ClaimTypes.Email, "fake-administrator@gmail.com"),
-        new Claim(ClaimTypes.Role, Roles.Administrator),
-    }, "Fake Authentication"));
+        var response = await client.Value.GetFromJsonAsync<List<FakeIdentityDto.Index>>($"{Endpoint}/identities");
 
-    public static ClaimsPrincipal Customer => new(new ClaimsIdentity(new[]
+        var claimsPrincipals = response.Select(dto =>
+            {
+                return new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, dto.Id),
+                    new Claim(ClaimTypes.Name, dto.Name),
+                }, Scheme.Name));
+            }
+        ).ToList();
+
+        ClaimsPrincipals = claimsPrincipals;
+
+        return claimsPrincipals;
+    }
+
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        new Claim(ClaimTypes.NameIdentifier, "2"),
-        new Claim(ClaimTypes.Name, "Customer"),
-        new Claim(ClaimTypes.Email, "fake-customer@gmail.com"),
-        new Claim(ClaimTypes.Role, Roles.Customer),
-    }, "Fake Authentication"));
+        var idClaim = Current.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier);
 
-    public static IEnumerable<ClaimsPrincipal> ClaimsPrincipals =>
-        new List<ClaimsPrincipal>() { Anonymous, Customer, Administrator }; 
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{Endpoint}/login/{idClaim.Value}");
+        HttpResponseMessage response = await client.Value.SendAsync(request);
 
-    public ClaimsPrincipal Current { get; private set; } = Administrator;
+        var responseBody = await response.Content.ReadFromJsonAsync<FakeIdentityDto.Login>();
+        var newClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, responseBody.Identifier),
+            new Claim(ClaimTypes.Name, responseBody.Name),
+            new Claim(ClaimTypes.Role, responseBody.Role),
+            new Claim("AccessToken", responseBody.AccessToken),
+            new Claim("TokenType", responseBody.TokenType),
+            new Claim("ExpiresIn", responseBody.ExpiresIn.ToString())
+        }, Scheme.Name));
 
-    public override Task<AuthenticationState> GetAuthenticationStateAsync()
-    {
-        return Task.FromResult(new AuthenticationState(Current));
+        Current = newClaimsPrincipal;
+
+        return new AuthenticationState(newClaimsPrincipal);
     }
 
     public void ChangeAuthenticationState(ClaimsPrincipal claimsPrincipal)

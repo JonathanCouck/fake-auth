@@ -1,25 +1,22 @@
-﻿using BogusStore.Shared.Authentication;
-using System;
-using System.Security.Claims;
-
-namespace BogusStore.Client.Authentication;
+namespace FakeAuth.Client.Authentication;
 
 public class FakeAuthorizationMessageHandler : DelegatingHandler
 {
-    private readonly FakeAuthProvider fakeAuthProvider;
+    private readonly FakeAuthenticationProvider fakeAuthenticationProvider;
 
-    public FakeAuthorizationMessageHandler(FakeAuthProvider fakeAuthProvider)
+    public FakeAuthorizationMessageHandler(FakeAuthenticationProvider fakeAuthenticationProvider)
     {
-        this.fakeAuthProvider = fakeAuthProvider;
+        this.fakeAuthenticationProvider = fakeAuthenticationProvider;
     }
+
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
     {
-        if(fakeAuthProvider.Current == null || fakeAuthProvider.Current.Name == "Unauthorized")
+        var accessToken = fakeAuthenticationProvider.Current.FindFirst("AccessToken")?.Value;
+        if (accessToken != null)
         {
-            return base.SendAsync(request, cancellationToken);
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
         }
 
-        request.Headers.Add("Authorization", $"Bearer {fakeAuthProvider.Current.Token}");
         return base.SendAsync(request, cancellationToken);
     }
 }
