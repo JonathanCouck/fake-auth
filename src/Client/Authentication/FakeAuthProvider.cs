@@ -7,6 +7,7 @@ namespace BogusStore.Client.Authentication
     public class FakeAuthProvider : AuthenticationStateProvider
     {
         private readonly HttpClient _http;
+        private const string endpoint = "api/security";
 
         public string[] PersonaNames = default!;
         public Persona Current { get; private set; } = default!;
@@ -30,25 +31,17 @@ namespace BogusStore.Client.Authentication
 
         public async Task SetPersonaNamesAsync()
         {
-            HttpResponseMessage response = await _http.GetAsync("https://localhost:5001/api/security/personas");
-            if (response.IsSuccessStatusCode)
-            {
-                PersonaNames = await response.Content.ReadFromJsonAsync<string[]>();
-                await ChangeAuthenticationStateAsync("Customer");
-            }
+            PersonaNames = await _http.GetFromJsonAsync<string[]>($"https://localhost:5001/{endpoint}/personas");
+            await ChangeAuthenticationStateAsync(PersonaNames[1]);
         }
 
         public async Task ChangeAuthenticationStateAsync(string name)
         {
-            HttpResponseMessage response = await _http.GetAsync($"https://localhost:5001/api/security/createToken?personaName={name}");
-            if (response.IsSuccessStatusCode)
+            string personaToken = await _http.GetFromJsonAsync<string>($"https://localhost:5001/{endpoint}/createToken?personaName={name}");
+            if (personaToken != null)
             {
-                string personaToken = await response.Content.ReadFromJsonAsync<string>();
-                if (personaToken != null)
-                {
-                    Current = new(name, personaToken);
-                    NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-                }
+                Current = new(name, personaToken);
+                NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
             }
         }
     }

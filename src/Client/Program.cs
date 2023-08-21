@@ -18,8 +18,11 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddAuthorizationCore();
 
-builder.Services.AddHttpClient("Project.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
-                .AddHttpMessageHandler<FakeAuthorizationMessageHandler>();
+builder.Services.AddHttpClient("Project.ServerAPI", client => {
+    Console.WriteLine();
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+    Console.WriteLine();
+} ).AddHttpMessageHandler<FakeAuthorizationMessageHandler>();
 
 builder.Services.AddSingleton<FakeAuthProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<FakeAuthProvider>());

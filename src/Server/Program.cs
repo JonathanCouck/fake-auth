@@ -87,7 +87,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 
 // Fake Authentication routing
-//FakeAuthHandler.MapAuthenticationRoutes(builder, app);
+FakeAuthHandler.MapAuthenticationRoutes(builder, app);
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -13,6 +13,28 @@ namespace BogusStore.Server.Authentication
 {
 	public class FakeAuthHandler: AuthenticationHandler<FakeAuthSchemeOptions>
     {
+        private static IEnumerable<ClaimsIdentity> _personas = new List<ClaimsIdentity>
+        {
+            new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "0"),
+                new Claim(ClaimTypes.Name, "Anonymous"),
+                new Claim(ClaimTypes.Role, Roles.Anonymous),
+            }),
+            new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "1"),
+                new Claim(ClaimTypes.Name, "Administrator"),
+                new Claim(ClaimTypes.Role, Roles.Administrator),
+                new Claim(ClaimTypes.Role, Roles.Customer),
+            }),
+            new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "2"),
+                new Claim(ClaimTypes.Name, "Customer"),
+                new Claim(ClaimTypes.Role, Roles.Customer),
+            }),
+        };
         public FakeAuthHandler(
 			IOptionsMonitor<FakeAuthSchemeOptions> options,
 			ILoggerFactory logger,
@@ -45,13 +67,13 @@ namespace BogusStore.Server.Authentication
 			return await Task.FromResult(AuthenticateResult.NoResult());
         }
 
-		public void MapAuthenticationRoutes(WebApplicationBuilder builder, WebApplication app)
+		public static void MapAuthenticationRoutes(WebApplicationBuilder builder, WebApplication app)
 		{
             // Route for getting an array of all persona names
             app.MapGet("/api/security/personas",
             [HttpGet, AllowAnonymous] () =>
             {
-                return Results.Ok(Options.Personas
+                return Results.Ok(_personas
 					.SelectMany(a => a.Claims.Where(c => c.Type == ClaimTypes.Name && !string.IsNullOrEmpty(c.Value)))
 					.Select(c => c.Value)
 					.ToList());
@@ -61,7 +83,7 @@ namespace BogusStore.Server.Authentication
 			app.MapGet("/api/security/createToken",
 			[HttpGet, AllowAnonymous] ([FromQuery] string personaName) =>
 			{
-				ClaimsIdentity? personaWithMatchingName = Options.Personas.FirstOrDefault(a =>
+				ClaimsIdentity? personaWithMatchingName = _personas.FirstOrDefault(a =>
 					a.FindFirst(ClaimTypes.Name)?.Value == personaName);
 				if (personaWithMatchingName != null)
 				{

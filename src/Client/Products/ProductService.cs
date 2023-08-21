@@ -28,13 +28,13 @@ public class ProductService : IProductService
 
     public async Task<ProductDto.Detail> GetDetailAsync(int productId)
     {
-        var response = await client.GetFromJsonAsync<ProductDto.Detail>($"{endpoint}/{productId}");
+        var response = await client.GetFromJsonAsync<ProductDto.Detail>($"https://localhost:5001/{endpoint}/{productId}");
         return response;
     }
 
     public async Task<ProductResult.Index> GetIndexAsync(ProductRequest.Index request)
     {
-        var response = await client.GetFromJsonAsync<ProductResult.Index>($"{endpoint}?{request.AsQueryString()}");
+        var response = await client.GetFromJsonAsync<ProductResult.Index>($"https://localhost:5001/{endpoint}?{request.AsQueryString()}");
         return response!;
     }
 

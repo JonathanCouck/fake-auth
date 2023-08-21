@@ -36,7 +36,7 @@ namespace BogusStore.Server.Authentication
         };
         public IEnumerable<ClaimsIdentity> Personas 
         { 
-            get => _personas; 
+            get => _personas;
             set
             {
                 foreach (var persona in value)
@@ -48,7 +48,6 @@ namespace BogusStore.Server.Authentication
                     }
                 }
                 _personas = value;
-                Console.WriteLine();
             }
         }
 
