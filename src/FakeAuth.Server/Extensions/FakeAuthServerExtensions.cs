@@ -1,4 +1,8 @@
+using System.Dynamic;
 using FakeAuth.Server.Services;
+using FakeAuth.Server.Services.Identity;
+using FakeAuth.Server.Services.Token;
+using FakeAuth.Server.Services.Token.JWT;
 using FakeAuth.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -9,22 +13,26 @@ namespace FakeAuth.Server.Extensions;
 
 public static class FakeAuthServerExtensions
 {
-    public static void AddFakeAuthentication(this WebApplicationBuilder builder)
+    public static void AddFakeAuthentication<T, A>(this WebApplicationBuilder builder)
+        where T : ITokenGeneratorService
+        where A : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         var configuration = builder.Configuration;
 
-        var fakeIdentities = FakeIdentityService.CreateFromConfiguration(configuration);
-        builder.Services.AddSingleton(fakeIdentities);
+        var identities = configuration.GetSection("FakeIdentities").Get<List<FakeIdentity>>();
+        if (identities != null)
+            builder.Services.AddSingleton(identities);
 
+        builder.Services.AddSingleton<FakeIdentityService>();
 
-        var jwtConfig = configuration.GetSection("JWT").Get<JWTConfig>();
+        var jwtConfig = configuration.GetSection("JWT").Get<JwtConfig>();
         if (jwtConfig != null)
-        {
             builder.Services.AddSingleton(jwtConfig);
-        }
+
+        builder.Services.AddSingleton<ITokenGeneratorService>(sp => sp.GetRequiredService<T>());
 
         // (Fake) Authentication
         builder.Services.AddAuthentication(Scheme.Name)
-            .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>(Scheme.Name, null);
+            .AddScheme<AuthenticationSchemeOptions, A>(Scheme.Name, null);
     }
 }

@@ -11,12 +11,25 @@ public class FakeAuthorizationMessageHandler : DelegatingHandler
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
     {
-        var accessToken = fakeAuthenticationProvider.Current.FindFirst("AccessToken")?.Value;
-        if (accessToken != null)
-        {
-            request.Headers.Add("Authorization", $"Bearer {accessToken}");
-        }
+        AddAccessTokenToRequest(request);
 
         return base.SendAsync(request, cancellationToken);
+    }
+
+    protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        AddAccessTokenToRequest(request);
+
+        return base.Send(request, cancellationToken);
+    }
+
+    private void AddAccessTokenToRequest(HttpRequestMessage request)
+    {
+        var currentCredentials = fakeAuthenticationProvider.CurrentCredentials;
+        if (currentCredentials == null) return;
+        
+        var accessToken = currentCredentials.AccessToken;
+        var tokenType = currentCredentials.TokenType;
+        request.Headers.Add("Authorization", $"{tokenType} {accessToken}");
     }
 }

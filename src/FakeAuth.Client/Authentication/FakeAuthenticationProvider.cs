@@ -11,69 +11,57 @@ public class FakeAuthenticationProvider : AuthenticationStateProvider
 
     private readonly Lazy<HttpClient> client;
 
+    public IEnumerable<FakeIdentityDto.Index> FakeIdentities { get; set; }
+
+    public FakeIdentityDto.Credentials? CurrentCredentials { get; private set; }
+
+    public FakeIdentityDto.Index? CurrentIdentity { get; private set; }
+
     public FakeAuthenticationProvider(IHttpClientFactory clientFactory, string httpClientName)
     {
         // Issues with initializing HTTPClient via DI 
         // Manually lazy loading
         // See https://github.com/dotnet/aspnetcore/issues/33787
         client = new Lazy<HttpClient>(() => clientFactory.CreateClient(httpClientName));
+
+        FakeIdentities = new List<FakeIdentityDto.Index>();
     }
 
-    public static ClaimsPrincipal Anonymous => new(new ClaimsIdentity(new[]
-    {
-        new Claim(ClaimTypes.Name, "Anonymous"),
-        new Claim(ClaimTypes.NameIdentifier, "0"),
-    }));
 
-    public IEnumerable<ClaimsPrincipal> ClaimsPrincipals { get; set; } = new[] { Anonymous };
-    public ClaimsPrincipal Current { get; private set; } = Anonymous;
-
-
-    public async Task<List<ClaimsPrincipal>> GetIdentities()
+    public async Task<List<FakeIdentityDto.Index>?> GetIdentities()
     {
         var response = await client.Value.GetFromJsonAsync<List<FakeIdentityDto.Index>>($"{Endpoint}/identities");
 
-        var claimsPrincipals = response.Select(dto =>
-            {
-                return new ClaimsPrincipal(new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, dto.Id),
-                    new Claim(ClaimTypes.Name, dto.Name),
-                }, Scheme.Name));
-            }
-        ).ToList();
+        if (response == null) return response;
 
-        ClaimsPrincipals = claimsPrincipals;
+        FakeIdentities = response;
+        if (CurrentIdentity != null) return response;
 
-        return claimsPrincipals;
+        // If no CurrentIdentity is set, set it to a user with an anonymous role
+        // A user with anonymous role is always set through the backend
+        CurrentIdentity = FakeIdentities.First(identity => identity.IsAnonymous());
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        return response;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var idClaim = Current.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier);
+        var name = CurrentIdentity?.Name;
+        // If name is null, CurrentIdentity is probably not set yet because the /identities call hasn't happened.
+        // Creating an AuthenticationState with an empty principal
+        if (name == null) return new AuthenticationState(new ClaimsPrincipal());
 
-        var request = new HttpRequestMessage(HttpMethod.Post, $"{Endpoint}/login/{idClaim.Value}");
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{Endpoint}/login/{name}");
         HttpResponseMessage response = await client.Value.SendAsync(request);
 
-        var responseBody = await response.Content.ReadFromJsonAsync<FakeIdentityDto.Login>();
-        var newClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, responseBody.Identifier),
-            new Claim(ClaimTypes.Name, responseBody.Name),
-            new Claim(ClaimTypes.Role, responseBody.Role),
-            new Claim("AccessToken", responseBody.AccessToken),
-            new Claim("TokenType", responseBody.TokenType),
-            new Claim("ExpiresIn", responseBody.ExpiresIn.ToString())
-        }, Scheme.Name));
-
-        Current = newClaimsPrincipal;
-
-        return new AuthenticationState(newClaimsPrincipal);
+        CurrentCredentials = await response.Content.ReadFromJsonAsync<FakeIdentityDto.Credentials>();
+        var claimsIdentity = CurrentCredentials!.ToClaimsIdentity();
+        return new AuthenticationState(new ClaimsPrincipal(claimsIdentity));
     }
 
-    public void ChangeAuthenticationState(ClaimsPrincipal claimsPrincipal)
+    public void ChangeAuthenticationState(FakeIdentityDto.Index identity)
     {
-        Current = claimsPrincipal;
+        CurrentIdentity = identity;
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 }

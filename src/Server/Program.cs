@@ -3,6 +3,9 @@ using BogusStore.Server.Middleware;
 using BogusStore.Services;
 using BogusStore.Shared.Products;
 using FakeAuth.Server.Extensions;
+using FakeAuth.Server.Services.Token.Basic;
+using FakeAuth.Server.Services.Token.Header;
+using FakeAuth.Server.Services.Token.JWT;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
@@ -29,7 +32,16 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<BogusDbContext>();
 
 // Fake Authentication
-builder.AddFakeAuthentication();
+if (builder.Environment.IsDevelopment())
+{
+    // Uncomment to authenticate using Basic Authentication
+    // builder.Services.AddSingleton<BasicTokenGeneratorService>();
+    // builder.AddFakeAuthentication<BasicTokenGeneratorService, BasicAuthenticationHandler>();
+
+    // The following instantiates the Token Generation Service and Authentication Handler that can work with JWT
+    builder.Services.AddSingleton<JwtTokenGeneratorService>();
+    builder.AddFakeAuthentication<JwtTokenGeneratorService, JwtAuthenticationHandler>();
+}
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

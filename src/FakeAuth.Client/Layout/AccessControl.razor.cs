@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using FakeAuth.Client.Authentication;
+using FakeAuth.Shared;
 using Microsoft.AspNetCore.Components;
 
 namespace FakeAuth.Client.Layout;
@@ -8,14 +9,14 @@ public partial class AccessControl
 {
     [Inject] public FakeAuthenticationProvider FakeAuthenticationProvider { get; set; } = default!;
 
-    private string? IsActive(ClaimsPrincipal principal)
+    private string? IsActive(FakeIdentityDto.Index identity)
     {
-        return FakeAuthenticationProvider.Current.Identity?.Name == principal.Identity?.Name ? "is-active" : null;
+        return FakeAuthenticationProvider.CurrentIdentity?.Name == identity.Name ? "is-active" : null;
     }
 
-    private void ChangePrincipal(ClaimsPrincipal principal)
+    private void ChangeIdentity(FakeIdentityDto.Index identity)
     {
-        FakeAuthenticationProvider.ChangeAuthenticationState(principal);
+        FakeAuthenticationProvider.ChangeAuthenticationState(identity);
     }
 
     protected override Task OnParametersSetAsync()
@@ -23,4 +24,3 @@ public partial class AccessControl
         return FakeAuthenticationProvider.GetIdentities();
     }
 }
-

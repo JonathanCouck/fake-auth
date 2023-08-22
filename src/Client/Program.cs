@@ -22,7 +22,10 @@ var httpClientBuilder = builder.Services.AddHttpClient(
     client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 );
 
-builder.AddClientFakeAuthentication(httpClientBuilder);
+if (builder.HostEnvironment.IsDevelopment())
+{
+    builder.AddClientFakeAuthentication(httpClientBuilder);
+}
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Project.ServerAPI"));
 
