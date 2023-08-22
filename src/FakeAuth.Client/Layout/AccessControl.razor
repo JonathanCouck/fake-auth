@@ -1,0 +1,19 @@
+﻿<div class="navbar-item has-dropdown is-hoverable ">
+    <a class="navbar-link">
+        Login as
+    </a>
+
+    <div class="navbar-dropdown is-right">
+
+        @foreach (var identity in FakeAuthenticationProvider.FakeIdentities)
+        {
+            <a class="navbar-item @IsActive(identity)" @onclick="_ => ChangeIdentity(identity)">
+                @identity.Name
+            </a>
+        }
+    </div>
+
+</div>
+<a class="navbar-item">
+    @FakeAuthenticationProvider.CurrentIdentity?.Name
+</a>

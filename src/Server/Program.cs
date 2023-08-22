@@ -1,13 +1,14 @@
 using BogusStore.Persistence;
-using BogusStore.Server.Authentication;
 using BogusStore.Server.Middleware;
 using BogusStore.Services;
 using BogusStore.Shared.Products;
+using FakeAuth.Server.Extensions;
+using FakeAuth.Server.Services.Token.Basic;
+using FakeAuth.Server.Services.Token.Header;
+using FakeAuth.Server.Services.Token.JWT;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,9 +31,17 @@ builder.Services.AddSwaggerGen(options =>
 // Database
 builder.Services.AddDbContext<BogusDbContext>();
 
-// (Fake) Authentication
-builder.Services.AddAuthentication("Fake Authentication")
-                .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("Fake Authentication", null);
+// Fake Authentication
+if (builder.Environment.IsDevelopment())
+{
+    // Uncomment to authenticate using Basic Authentication
+    // builder.Services.AddSingleton<BasicTokenGeneratorService>();
+    // builder.AddFakeAuthentication<BasicTokenGeneratorService, BasicAuthenticationHandler>();
+
+    // The following instantiates the Token Generation Service and Authentication Handler that can work with JWT
+    builder.Services.AddSingleton<JwtTokenGeneratorService>();
+    builder.AddFakeAuthentication<JwtTokenGeneratorService, JwtAuthenticationHandler>();
+}
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -68,7 +77,8 @@ app.MapFallbackToFile("index.html");
 
 
 using (var scope = app.Services.CreateScope())
-{ // Require a DbContext from the service provider and seed the database.
+{
+    // Require a DbContext from the service provider and seed the database.
     var dbContext = scope.ServiceProvider.GetRequiredService<BogusDbContext>();
     FakeSeeder seeder = new(dbContext);
     seeder.Seed();
