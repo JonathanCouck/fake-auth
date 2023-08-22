@@ -12,21 +12,20 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.10"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.21"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10"/>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0"/>
     </ItemGroup>
 
 
     <ItemGroup>
-      <ProjectReference Include="..\FakeAuth.Shared\FakeAuth.Shared.csproj" />
+        <ProjectReference Include="..\FakeAuth.Shared\FakeAuth.Shared.csproj"/>
     </ItemGroup>
 
 
-
     <ItemGroup>
-      <Folder Include="Layout\" />
+        <Folder Include="Layout\"/>
     </ItemGroup>
 
 

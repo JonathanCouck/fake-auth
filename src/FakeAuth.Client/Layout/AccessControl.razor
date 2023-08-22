@@ -5,7 +5,7 @@
 
     <div class="navbar-dropdown is-right">
 
-        @foreach (var identity in @FakeAuthenticationProvider.FakeIdentities)
+        @foreach (var identity in FakeAuthenticationProvider.FakeIdentities)
         {
             <a class="navbar-item @IsActive(identity)" @onclick="_ => ChangeIdentity(identity)">
                 @identity.Name

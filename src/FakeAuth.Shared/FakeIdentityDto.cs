@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Security.Claims;
 
 namespace FakeAuth.Shared;
@@ -9,15 +8,15 @@ public abstract class FakeIdentityDto
 
     public class Index
     {
-        public string Name { get; set; }
-
-        public string Role { get; set; }
-
         public Index(string name, string role)
         {
             Name = name;
             Role = role;
         }
+
+        public string Name { get; set; }
+
+        public string Role { get; set; }
 
         public bool IsAnonymous()
         {
@@ -27,12 +26,6 @@ public abstract class FakeIdentityDto
 
     public class Credentials
     {
-        public string AccessToken { get; set; }
-        public string TokenType { get; set; }
-        public int ExpiresIn { get; set; }
-        public string Name { get; set; }
-        public string Role { get; set; }
-
         public Credentials(string accessToken, string tokenType, int expiresIn, string name, string role)
         {
             AccessToken = accessToken;
@@ -41,6 +34,12 @@ public abstract class FakeIdentityDto
             Name = name;
             Role = role;
         }
+
+        public string AccessToken { get; set; }
+        public string TokenType { get; set; }
+        public int ExpiresIn { get; set; }
+        public string Name { get; set; }
+        public string Role { get; set; }
 
         public ClaimsIdentity ToClaimsIdentity(string? authenticationType = null)
         {

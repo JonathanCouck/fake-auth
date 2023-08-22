@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace FakeAuth.Server.Services.Token.JWT;
 
-public class JwtTokenGeneratorService: ITokenGeneratorService
+public class JwtTokenGeneratorService : ITokenGeneratorService
 {
     private readonly JwtConfig jwtConfig;
 

@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using FakeAuth.Client.Authentication;
+﻿using FakeAuth.Client.Authentication;
 using FakeAuth.Shared;
 using Microsoft.AspNetCore.Components;
 

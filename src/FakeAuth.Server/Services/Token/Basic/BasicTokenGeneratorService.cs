@@ -14,7 +14,7 @@ public class BasicTokenGeneratorService : ITokenGeneratorService
 
         return new Token(
             base64Credentials,
-            Int32.MaxValue,
+            int.MaxValue,
             identity,
             "Basic"
         );

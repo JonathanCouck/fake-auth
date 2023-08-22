@@ -1,13 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
-using FakeAuth.Server.Extensions;
-using FakeAuth.Server.Services;
 using FakeAuth.Server.Services.Identity;
 using FakeAuth.Server.Services.Token;
-using FakeAuth.Server.Services.Token.JWT;
 using FakeAuth.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FakeAuth.Server.Controllers;
 
@@ -28,13 +23,15 @@ public class FakeLoginController : ControllerBase
     }
 
     // [SwaggerOperation("Returns a list of products available in the bogus catalog.")]
-    [HttpGet("identities"), AllowAnonymous]
+    [HttpGet("identities")]
+    [AllowAnonymous]
     public IEnumerable<FakeIdentityDto.Index> GetIdentities()
     {
         return fakeIdentityService.Identities.Select(identity => identity.ToIndexDto());
     }
 
-    [HttpGet("identities/me"), Authorize(AuthenticationSchemes = Scheme.Name)]
+    [HttpGet("identities/me")]
+    [Authorize(AuthenticationSchemes = Scheme.Name)]
     public IActionResult GetIdentity()
     {
         var user = HttpContext.User;
@@ -48,14 +45,12 @@ public class FakeLoginController : ControllerBase
         return Ok(fakeIdentity);
     }
 
-    [HttpPost("login/{identifier}"), AllowAnonymous]
+    [HttpPost("login/{identifier}")]
+    [AllowAnonymous]
     public IActionResult Login(string identifier)
     {
         var fakeIdentity = fakeIdentityService.FindIdentityForName(identifier);
-        if (fakeIdentity == null)
-        {
-            return Unauthorized();
-        }
+        if (fakeIdentity == null) return Unauthorized();
 
         var token = tokenGeneratorService.GenerateToken(fakeIdentity);
 

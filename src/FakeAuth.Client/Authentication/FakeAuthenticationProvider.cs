@@ -11,12 +11,6 @@ public class FakeAuthenticationProvider : AuthenticationStateProvider
 
     private readonly Lazy<HttpClient> client;
 
-    public IEnumerable<FakeIdentityDto.Index> FakeIdentities { get; set; }
-
-    public FakeIdentityDto.Credentials? CurrentCredentials { get; private set; }
-
-    public FakeIdentityDto.Index? CurrentIdentity { get; private set; }
-
     public FakeAuthenticationProvider(IHttpClientFactory clientFactory, string httpClientName)
     {
         // Issues with initializing HTTPClient via DI 
@@ -26,6 +20,12 @@ public class FakeAuthenticationProvider : AuthenticationStateProvider
 
         FakeIdentities = new List<FakeIdentityDto.Index>();
     }
+
+    public IEnumerable<FakeIdentityDto.Index> FakeIdentities { get; set; }
+
+    public FakeIdentityDto.Credentials? CurrentCredentials { get; private set; }
+
+    public FakeIdentityDto.Index? CurrentIdentity { get; private set; }
 
 
     public async Task<List<FakeIdentityDto.Index>?> GetIdentities()
@@ -52,7 +52,7 @@ public class FakeAuthenticationProvider : AuthenticationStateProvider
         if (name == null) return new AuthenticationState(new ClaimsPrincipal());
 
         var request = new HttpRequestMessage(HttpMethod.Post, $"{Endpoint}/login/{name}");
-        HttpResponseMessage response = await client.Value.SendAsync(request);
+        var response = await client.Value.SendAsync(request);
 
         CurrentCredentials = await response.Content.ReadFromJsonAsync<FakeIdentityDto.Credentials>();
         var claimsIdentity = CurrentCredentials!.ToClaimsIdentity();

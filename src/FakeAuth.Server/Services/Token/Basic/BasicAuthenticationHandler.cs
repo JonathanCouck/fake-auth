@@ -36,10 +36,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         var usernamePassword = Encoding.UTF8.GetString(decodedBytes);
 
         var delimiterIndex = usernamePassword.IndexOf(':');
-        if (delimiterIndex == -1)
-        {
-            throw new InvalidOperationException("Invalid decoded authentication header");
-        }
+        if (delimiterIndex == -1) throw new InvalidOperationException("Invalid decoded authentication header");
 
         var username = usernamePassword.Substring(0, delimiterIndex);
 
@@ -50,7 +47,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         var identity = fakeIdentity.ToClaimsIdentity(Scheme.Name);
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, Scheme.Name);
-        
+
         return await Task.FromResult(AuthenticateResult.Success(ticket));
     }
 }

@@ -1,8 +1,6 @@
-using System.Dynamic;
 using FakeAuth.Server.Services;
 using FakeAuth.Server.Services.Identity;
 using FakeAuth.Server.Services.Token;
-using FakeAuth.Server.Services.Token.JWT;
 using FakeAuth.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

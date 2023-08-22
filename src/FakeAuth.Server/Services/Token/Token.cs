@@ -4,14 +4,6 @@ namespace FakeAuth.Server.Services.Token;
 
 public class Token
 {
-    public string TokenString { get; set; }
-
-    public int Duration { get; set; }
-
-    public FakeIdentity IssuedFor { get; set; }
-
-    public string TokenType { get; set; }
-
     public Token(string tokenString, int duration, FakeIdentity issuedFor, string tokenType)
     {
         TokenString = tokenString;
@@ -19,4 +11,12 @@ public class Token
         IssuedFor = issuedFor;
         TokenType = tokenType;
     }
+
+    public string TokenString { get; set; }
+
+    public int Duration { get; set; }
+
+    public FakeIdentity IssuedFor { get; set; }
+
+    public string TokenType { get; set; }
 }

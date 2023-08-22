@@ -9,7 +9,7 @@ public class FakeAuthorizationMessageHandler : DelegatingHandler
         this.fakeAuthenticationProvider = fakeAuthenticationProvider;
     }
 
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         AddAccessTokenToRequest(request);
 
@@ -27,7 +27,7 @@ public class FakeAuthorizationMessageHandler : DelegatingHandler
     {
         var currentCredentials = fakeAuthenticationProvider.CurrentCredentials;
         if (currentCredentials == null) return;
-        
+
         var accessToken = currentCredentials.AccessToken;
         var tokenType = currentCredentials.TokenType;
         request.Headers.Add("Authorization", $"{tokenType} {accessToken}");
