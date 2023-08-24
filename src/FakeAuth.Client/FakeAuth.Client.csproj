@@ -1,31 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+
+		<PackageId>JonathanCouck.FakeAuth.Client</PackageId>
+		<Version>1.0.1</Version>
+		<Authors>JonathanCouck</Authors>
+		<Description>The client-side package for a powerful fake authentication service</Description>
     </PropertyGroup>
 
 
     <ItemGroup>
-        <SupportedPlatform Include="browser"/>
+        <SupportedPlatform Include="browser" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.10"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.21"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10"/>
-        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0"/>
-    </ItemGroup>
-
-
-    <ItemGroup>
-        <ProjectReference Include="..\FakeAuth.Shared\FakeAuth.Shared.csproj"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.21" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     </ItemGroup>
 
 
     <ItemGroup>
-        <Folder Include="Layout\"/>
+        <ProjectReference Include="..\FakeAuth.Shared\FakeAuth.Shared.csproj" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <Folder Include="Layout\" />
     </ItemGroup>
 
 

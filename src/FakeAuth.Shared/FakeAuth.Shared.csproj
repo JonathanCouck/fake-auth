@@ -4,6 +4,11 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
+
+		<PackageId>JonathanCouck.FakeAuth.Server</PackageId>
+		<Version>1.0.1</Version>
+		<Authors>JonathanCouck</Authors>
+		<Description>The package shared between server- and client-side for a powerful fake authentication service</Description>
     </PropertyGroup>
 
 </Project>
