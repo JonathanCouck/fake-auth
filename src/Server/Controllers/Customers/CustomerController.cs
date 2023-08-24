@@ -4,6 +4,7 @@ using BogusStore.Shared.Customers;
 using BogusStore.Services.Products;
 using BogusStore.Shared.Products;
 using BogusStore.Shared.Orders;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BogusStore.Server.Controllers.Products;
 
@@ -21,7 +22,7 @@ public class CustomerController : ControllerBase
     }
 
     [SwaggerOperation("Returns a list of all the customers.")]
-    [HttpGet]
+    [HttpGet, Authorize(Roles = "Administrator")]
     public async Task<CustomerResult.Index> GetIndex([FromQuery] CustomerRequest.Index request)
     {
         return await customerService.GetIndexAsync(request);

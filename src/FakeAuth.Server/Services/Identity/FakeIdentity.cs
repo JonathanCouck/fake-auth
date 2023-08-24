@@ -21,7 +21,7 @@ public class FakeIdentity
         claims.Add(new Claim(ClaimTypes.Name, Name));
         claims.Add(new Claim(ClaimTypes.Role, Role));
 
-        return new ClaimsIdentity(claims, authenticationType, Name, Role);
+        return new ClaimsIdentity(claims, authenticationType);
     }
 
     public bool IsAnonymous()
