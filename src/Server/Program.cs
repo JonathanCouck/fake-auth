@@ -35,12 +35,12 @@ builder.Services.AddDbContext<BogusDbContext>();
 if (builder.Environment.IsDevelopment())
 {
     // Uncomment to authenticate using Basic Authentication
-    // builder.Services.AddSingleton<BasicTokenGeneratorService>();
-    // builder.AddFakeAuthentication<BasicTokenGeneratorService, BasicAuthenticationHandler>();
+    builder.Services.AddSingleton<BasicTokenGeneratorService>();
+    builder.AddFakeAuthentication<BasicTokenGeneratorService, BasicAuthenticationHandler>();
 
     // The following instantiates the Token Generation Service and Authentication Handler that can work with JWT
-    builder.Services.AddSingleton<JwtTokenGeneratorService>();
-    builder.AddFakeAuthentication<JwtTokenGeneratorService, JwtAuthenticationHandler>();
+    //builder.Services.AddSingleton<JwtTokenGeneratorService>();
+    //builder.AddFakeAuthentication<JwtTokenGeneratorService, JwtAuthenticationHandler>();
 }
 
 builder.Services.AddControllersWithViews();

@@ -1,6 +1,6 @@
 namespace FakeAuth.Shared;
 
-public class Scheme
+public static class Scheme
 {
     public const string Name = "Fake Authentication";
 }

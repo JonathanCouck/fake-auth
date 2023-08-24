@@ -1,6 +1,7 @@
 using FakeAuth.Server.Services;
 using FakeAuth.Server.Services.Identity;
 using FakeAuth.Server.Services.Token;
+using FakeAuth.Server.Services.Token.JWT;
 using FakeAuth.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -23,9 +24,12 @@ public static class FakeAuthServerExtensions
 
         builder.Services.AddSingleton<FakeIdentityService>();
 
-        var jwtConfig = configuration.GetSection("JWT").Get<JwtConfig>();
-        if (jwtConfig != null)
-            builder.Services.AddSingleton(jwtConfig);
+        if (typeof(T) == typeof(JwtTokenGeneratorService) && typeof(A) == typeof(JwtAuthenticationHandler))
+        {
+            var jwtConfig = configuration.GetSection("JWT").Get<JwtConfig>();
+            if (jwtConfig != null)
+                builder.Services.AddSingleton(jwtConfig);
+        }
 
         builder.Services.AddSingleton<ITokenGeneratorService>(sp => sp.GetRequiredService<T>());
 

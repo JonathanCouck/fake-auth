@@ -11,10 +11,10 @@ public class FakeIdentityService
         CreateAnonymousIdentityIfNeeded();
     }
 
-    public FakeIdentity? FindIdentityForName(string identifier)
+    public FakeIdentity? FindIdentityForName(string name)
     {
         // We assume that identity name is case insensitive for ease of use purposes. This is fake auth after all
-        return Identities.Find(identity => string.Equals(identifier, identity.Name, StringComparison.InvariantCultureIgnoreCase));
+        return Identities.Find(identity => string.Equals(name, identity.Name, StringComparison.InvariantCultureIgnoreCase));
     }
 
     private void CreateAnonymousIdentityIfNeeded()
