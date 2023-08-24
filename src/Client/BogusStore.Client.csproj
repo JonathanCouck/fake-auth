@@ -11,6 +11,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="JonathanCouck.FakeAuth.Client" Version="1.0.0" />
+		<PackageReference Include="JonathanCouck.FakeAuth.Shared" Version="1.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.10" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.11" />
@@ -21,7 +23,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\FakeAuth.Client\FakeAuth.Client.csproj" />
 		<ProjectReference Include="..\Shared\BogusStore.Shared.csproj" />
 	</ItemGroup>
 </Project>

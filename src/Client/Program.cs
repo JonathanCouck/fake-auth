@@ -35,6 +35,6 @@ builder.Services.AddScoped<Cart>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddHttpClient<IStorageService, AzureBlobStorageService>();
+builder.Services.AddHttpClient<IStorageService,AzureBlobStorageService>();
 
 await builder.Build().RunAsync();

@@ -3,6 +3,8 @@ using BogusStore.Shared.Products;
 using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using BogusStore.Shared.Authentication;
+using FakeAuth.Client.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BogusStore.Server.Controllers.Products;
 
@@ -18,9 +20,10 @@ public class ProductController : ControllerBase
     }
 
     [SwaggerOperation("Returns a list of products available in the bogus catalog.")]
-    [HttpGet, AllowAnonymous]
+    [HttpGet]
     public async Task<ProductResult.Index> GetIndex([FromQuery] ProductRequest.Index request)
     {
+
         return await productService.GetIndexAsync(request);
     }
 
