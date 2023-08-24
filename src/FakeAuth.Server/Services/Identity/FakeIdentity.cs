@@ -5,13 +5,13 @@ namespace FakeAuth.Server.Services.Identity;
 
 public class FakeIdentity
 {
-    private const string AnonymousName = "Anonymous";
+    private const string _anonymousName = "Anonymous";
 
-    private const string AnonymousRole = "Anonymous";
+    private const string _anonymousRole = "Anonymous";
 
-    public string Name { get; set; } = AnonymousName;
+    public string Name { get; set; } = _anonymousName;
 
-    public string Role { get; set; } = AnonymousRole;
+    public string Role { get; set; } = _anonymousRole;
 
     public List<UserClaim> Claims { get; set; } = new();
 
@@ -26,7 +26,7 @@ public class FakeIdentity
 
     public bool IsAnonymous()
     {
-        return Role == AnonymousRole;
+        return Role == _anonymousRole;
     }
 
     public FakeIdentityDto.Index ToIndexDto()

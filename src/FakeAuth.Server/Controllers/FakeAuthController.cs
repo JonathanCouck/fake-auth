@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FakeAuth.Server.Controllers;
 
-// using Swashbuckle.AspNetCore.Annotations;
-
 [ApiController]
 [Route("api/fake-login")]
 public class FakeLoginController : ControllerBase
@@ -22,7 +20,6 @@ public class FakeLoginController : ControllerBase
         this.tokenGeneratorService = tokenGeneratorService;
     }
 
-    // [SwaggerOperation("Returns a list of products available in the bogus catalog.")]
     [HttpGet("identities")]
     [AllowAnonymous]
     public IEnumerable<FakeIdentityDto.Index> GetIdentities()
@@ -30,26 +27,11 @@ public class FakeLoginController : ControllerBase
         return fakeIdentityService.Identities.Select(identity => identity.ToIndexDto());
     }
 
-    [HttpGet("identities/me")]
-    [Authorize(AuthenticationSchemes = Scheme.Name)]
-    public IActionResult GetIdentity()
-    {
-        var user = HttpContext.User;
-        var identifier = user.Identities.First(identity => identity.AuthenticationType == Scheme.Name).Name;
-
-        if (identifier == null) return NotFound();
-
-        var fakeIdentity = fakeIdentityService.FindIdentityForName(identifier);
-        if (fakeIdentity == null) return NotFound();
-
-        return Ok(fakeIdentity);
-    }
-
-    [HttpPost("login/{identifier}")]
+    [HttpPost("login/{name}")]
     [AllowAnonymous]
-    public IActionResult Login(string identifier)
+    public IActionResult Login(string name)
     {
-        var fakeIdentity = fakeIdentityService.FindIdentityForName(identifier);
+        var fakeIdentity = fakeIdentityService.FindIdentityForName(name);
         if (fakeIdentity == null) return Unauthorized();
 
         var token = tokenGeneratorService.GenerateToken(fakeIdentity);
