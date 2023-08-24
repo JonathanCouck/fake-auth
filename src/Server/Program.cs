@@ -34,8 +34,13 @@ builder.Services.AddDbContext<BogusDbContext>();
 // Fake Authentication
 if (builder.Environment.IsDevelopment())
 {
+    // Uncomment to authenticate using Basic Authentication
     builder.Services.AddSingleton<BasicTokenGeneratorService>();
     builder.AddFakeAuthentication<BasicTokenGeneratorService, BasicAuthenticationHandler>();
+
+    // The following instantiates the Token Generation Service and Authentication Handler that can work with JWT
+    //builder.Services.AddSingleton<JwtTokenGeneratorService>();
+    //builder.AddFakeAuthentication<JwtTokenGeneratorService, JwtAuthenticationHandler>();
 }
 
 builder.Services.AddControllersWithViews();
@@ -72,7 +77,8 @@ app.MapFallbackToFile("index.html");
 
 
 using (var scope = app.Services.CreateScope())
-{ // Require a DbContext from the service provider and seed the database.
+{
+    // Require a DbContext from the service provider and seed the database.
     var dbContext = scope.ServiceProvider.GetRequiredService<BogusDbContext>();
     FakeSeeder seeder = new(dbContext);
     seeder.Seed();

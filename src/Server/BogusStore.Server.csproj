@@ -7,8 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="JonathanCouck.FakeAuth.Server" Version="1.0.0" />
-		<PackageReference Include="JonathanCouck.FakeAuth.Shared" Version="1.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.10" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 		<PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
@@ -18,6 +16,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Client\BogusStore.Client.csproj" />
+		<ProjectReference Include="..\FakeAuth.Server\FakeAuth.Server.csproj" />
 		<ProjectReference Include="..\Shared\BogusStore.Shared.csproj" />
 		<ProjectReference Include="..\Services\BogusStore.Services.csproj" />
 		<ProjectReference Include="..\Persistence\BogusStore.Persistence.csproj" />
