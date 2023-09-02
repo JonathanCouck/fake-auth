@@ -4,32 +4,22 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
-
+		
 		<PackageId>JonathanCouck.FakeAuth.Server</PackageId>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<Authors>JonathanCouck</Authors>
 		<Description>The server-side package for a powerful fake authentication service</Description>
     </PropertyGroup>
 
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.10"/>
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.10" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.1" />
     </ItemGroup>
 
 
     <ItemGroup>
-        <Reference Include="Microsoft.AspNetCore.Mvc.Abstractions">
-            <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.21\Microsoft.AspNetCore.Mvc.Abstractions.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.AspNetCore.Mvc.Core">
-            <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.21\Microsoft.AspNetCore.Mvc.Core.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-
-
-    <ItemGroup>
-        <ProjectReference Include="..\FakeAuth.Shared\FakeAuth.Shared.csproj"/>
+        <ProjectReference Include="..\FakeAuth.Shared\FakeAuth.Shared.csproj" />
     </ItemGroup>
 
 </Project>
